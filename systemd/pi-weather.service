@@ -1,0 +1,17 @@
+[Unit]
+Description=3rd Albans Pi Weather kiosk app
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/pi-weather
+EnvironmentFile=-/home/pi/pi-weather/.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node /home/pi/pi-weather/server/index.js
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

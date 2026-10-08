@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>3rd Albans Weather</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="sky" aria-hidden="true"></div>
+
+    <header class="top">
+      <div>
+        <p class="brand">3rd Albans Weather</p>
+        <p class="meta" id="updated">Waiting for data…</p>
+      </div>
+      <div class="top-actions">
+        <button type="button" class="ghost" id="btn-refresh" aria-label="Refresh">Refresh</button>
+        <button type="button" class="danger" id="btn-power">Power</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="hero" aria-labelledby="temp-label">
+        <p class="eyebrow" id="condition">—</p>
+        <p class="temp" id="temp-label"><span id="temp">--</span><span class="unit">°</span></p>
+        <p class="sub" id="feels">Feels like —</p>
+        <div class="hero-metrics">
+          <div>
+            <span class="label">Humidity</span>
+            <strong id="humidity">—</strong>
+          </div>
+          <div>
+            <span class="label">Wind</span>
+            <strong id="wind">—</strong>
+          </div>
+          <div>
+            <span class="label">Rain today</span>
+            <strong id="rain">—</strong>
+          </div>
+          <div>
+            <span class="label">Pressure</span>
+            <strong id="pressure">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel history" aria-labelledby="history-title">
+        <div class="panel-head">
+          <h2 id="history-title">History</h2>
+          <div class="segmented" role="tablist" aria-label="History range">
+            <button type="button" class="seg active" data-range="week">Week</button>
+            <button type="button" class="seg" data-range="month">Month</button>
+          </div>
+        </div>
+        <div class="stats" id="history-stats">
+          <div class="stat">
+            <span class="label">High</span>
+            <strong id="h-high">—</strong>
+          </div>
+          <div class="stat">
+            <span class="label">Low</span>
+            <strong id="h-low">—</strong>
+          </div>
+          <div class="stat">
+            <span class="label">Average</span>
+            <strong id="h-avg">—</strong>
+          </div>
+          <div class="stat">
+            <span class="label">Rain</span>
+            <strong id="h-rain">—</strong>
+          </div>
+        </div>
+        <canvas id="chart" width="480" height="160" aria-label="Temperature history chart"></canvas>
+      </section>
+    </main>
+
+    <section class="strip" aria-label="Indoor and extra readings">
+      <div>
+        <span class="label">Indoor</span>
+        <strong id="indoor">—</strong>
+      </div>
+      <div>
+        <span class="label">Gust</span>
+        <strong id="gust">—</strong>
+      </div>
+      <div>
+        <span class="label">UV</span>
+        <strong id="uvi">—</strong>
+      </div>
+      <div>
+        <span class="label">Source</span>
+        <strong id="source">—</strong>
+      </div>
+    </section>
+
+    <dialog id="power-dialog">
+      <form method="dialog" class="power-card">
+        <h3>Power</h3>
+        <p>Shut down cleanly to protect the SD card. Avoid pulling power while the Pi is on.</p>
+        <div class="power-actions">
+          <button type="submit" class="ghost" value="cancel">Cancel</button>
+          <button type="button" class="ghost" id="btn-reboot">Reboot</button>
+          <button type="button" class="danger" id="btn-shutdown">Shut down</button>
+        </div>
+        <p class="hint" id="power-hint" hidden></p>
+      </form>
+    </dialog>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
