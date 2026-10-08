@@ -19,7 +19,13 @@ elif command -v unclutter >/dev/null 2>&1; then
   unclutter -idle 0.1 -root &
 fi
 
-exec chromium-browser \
+CHROME_BIN="$(command -v chromium || command -v chromium-browser)"
+if [[ -z "$CHROME_BIN" ]]; then
+  echo "Chromium not found" >&2
+  exit 1
+fi
+
+exec "$CHROME_BIN" \
   --kiosk \
   --app="$URL" \
   --noerrdialogs \
