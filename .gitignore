@@ -10,3 +10,11 @@ Thumbs.db
 *.log
 .vscode/
 .idea/
+
+# Credentials / security — NEVER push to GitHub
+*Scout Hut Weather Station*
+*Scout*Hut*Weather*Station*
+*.docx
+secrets/
+credentials*
+**/passwords*

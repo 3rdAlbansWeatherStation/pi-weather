@@ -56,9 +56,7 @@ $USER_NAME ALL=NOPASSWD: /bin/systemctl poweroff, /bin/systemctl reboot
 EOF
 sudo chmod 440 /etc/sudoers.d/pi-weather-power
 
-echo "==> Autologin + graphical target"
-sudo mkdir -p /etc/systemd/system/carlos.getty@tty1.service.d
-# Bookworm uses getty@tty1; raspi-config can also set autologin
+echo "==> Autologin on console (raspi-config B2)"
 if command -v raspi-config >/dev/null 2>&1; then
   sudo raspi-config nonint do_boot_behaviour B2 || true
 fi

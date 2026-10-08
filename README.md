@@ -23,7 +23,7 @@ Power buttons stay disabled until `ALLOW_POWER_CONTROL=true` (Pi only).
 ## Pi first boot (checklist)
 
 1. Flash **Raspberry Pi OS Lite (64-bit, Bookworm)** with Imager:
-   - hostname e.g. `weather-pi`
+   - hostname e.g. `PiWeatherStation`
    - user / password
    - Wi‑Fi
    - **SSH enabled**
@@ -38,7 +38,7 @@ bash scripts/pi/setup-kiosk.sh
 sudo reboot
 ```
 
-4. From any device on the same Wi‑Fi: `http://weather-pi.local:3000` (or the Pi’s IP).
+4. From any device on the same Wi‑Fi: `http://PiWeatherStation.local:3000` (or the Pi’s IP).
 
 ## Deploy updates
 
