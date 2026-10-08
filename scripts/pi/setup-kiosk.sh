@@ -14,6 +14,7 @@ fi
 echo "==> Installing packages"
 sudo apt-get update
 sudo apt-get install -y \
+  chromium \
   chromium-browser \
   labwc \
   seatd \
