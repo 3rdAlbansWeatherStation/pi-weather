@@ -31,3 +31,9 @@ GitHub only serves `https://3rdalbansweatherstation.github.io/` from a repo name
 this `site/` folder is the source copy, published to that Pages repo at the **root**.
 
 No secrets are required for the mock site. Never put API keys in either repo.
+
+## Cache busting
+
+GitHub Pages caches CSS/JS aggressively. After style or script changes, bump the
+`?v=` query on the links in `index.html` (e.g. `styles.css?v=5`) so browsers
+fetch the new files instead of an old cached copy.
