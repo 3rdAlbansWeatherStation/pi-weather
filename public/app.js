@@ -1,5 +1,6 @@
 const REFRESH_MS = 30_000;
 let historyRange = "week";
+let currentView = "live";
 let refreshTimer;
 
 const $ = (id) => document.getElementById(id);
@@ -17,9 +18,9 @@ function fmtTime(iso) {
 }
 
 function windDir(deg) {
-  if (deg == null || Number.isNaN(deg)) return "";
+  if (deg == null || Number.isNaN(Number(deg))) return "—";
   const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-  return dirs[Math.round(deg / 45) % 8];
+  return dirs[Math.round(Number(deg) / 45) % 8];
 }
 
 async function getJson(url) {
@@ -28,33 +29,51 @@ async function getJson(url) {
   return res.json();
 }
 
+function setView(view) {
+  currentView = view;
+  $("view-live").hidden = view !== "live";
+  $("view-historic").hidden = view !== "historic";
+  document.querySelectorAll(".view-btn").forEach((btn) => {
+    const active = btn.dataset.view === view;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-selected", active ? "true" : "false");
+  });
+  if (view === "historic") {
+    requestAnimationFrame(() => refresh());
+  }
+}
+
 function renderCurrent(data) {
-  $("condition").textContent = data.condition || "Current";
+  const deg = data.wind?.directionDeg;
+  const speed = data.wind?.speedMs;
+
   $("temp").textContent =
     data.outdoor?.tempC == null ? "--" : Number(data.outdoor.tempC).toFixed(1);
   $("feels").textContent =
-    data.outdoor?.feelsLikeC == null
-      ? "Feels like —"
-      : `Feels like ${Number(data.outdoor.feelsLikeC).toFixed(1)}°`;
+    data.outdoor?.feelsLikeC == null ? "--" : Number(data.outdoor.feelsLikeC).toFixed(1);
   $("humidity").textContent =
-    data.outdoor?.humidity == null ? "—" : `${data.outdoor.humidity}%`;
-  $("wind").textContent =
-    data.wind?.speedMs == null
-      ? "—"
-      : `${Number(data.wind.speedMs).toFixed(1)} m/s ${windDir(data.wind.directionDeg)}`;
+    data.outdoor?.humidity == null ? "--" : String(data.outdoor.humidity);
   $("rain").textContent =
-    data.rain?.dailyMm == null ? "—" : `${Number(data.rain.dailyMm).toFixed(1)} mm`;
+    data.rain?.dailyMm == null ? "--" : Number(data.rain.dailyMm).toFixed(1);
   $("pressure").textContent =
-    data.pressure?.relHpa == null ? "—" : `${Number(data.pressure.relHpa).toFixed(0)} hPa`;
+    data.pressure?.relHpa == null ? "--" : Number(data.pressure.relHpa).toFixed(0);
+  $("gust").textContent =
+    data.wind?.gustMs == null ? "--" : Number(data.wind.gustMs).toFixed(1);
   $("indoor").textContent =
     data.indoor?.tempC == null
-      ? "—"
+      ? "--"
       : `${Number(data.indoor.tempC).toFixed(1)}° / ${data.indoor.humidity ?? "—"}%`;
-  $("gust").textContent =
-    data.wind?.gustMs == null ? "—" : `${Number(data.wind.gustMs).toFixed(1)} m/s`;
-  $("uvi").textContent = data.solar?.uvi == null ? "—" : String(data.solar.uvi);
-  $("source").textContent = data.source || "—";
-  $("updated").textContent = `Updated ${fmtTime(data.updatedAt)} · ${data.station || "station"}`;
+  $("uvi").textContent = data.solar?.uvi == null ? "--" : String(data.solar.uvi);
+
+  $("wind-speed").textContent = speed == null ? "--" : Number(speed).toFixed(1);
+  $("wind-label").textContent = deg == null ? "Wind" : windDir(deg);
+  $("wind-needle").style.transform = `rotate(${Number(deg) || 0}deg)`;
+  $("wind-blurb").textContent =
+    deg == null
+      ? "Which way the wind is blowing, and how fast"
+      : `Wind from the ${windDir(deg)} · ${speed == null ? "—" : Number(speed).toFixed(1)} m/s`;
+
+  $("updated").textContent = `Updated ${fmtTime(data.updatedAt)} · ${data.station || "station"} · ${data.source || "mock"}`;
 }
 
 function renderHistory(data) {
@@ -68,10 +87,11 @@ function renderHistory(data) {
 
 function drawChart(points) {
   const canvas = $("chart");
+  if (!canvas || canvas.offsetParent === null) return;
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
-  const cssW = canvas.clientWidth || 480;
-  const cssH = canvas.clientHeight || 150;
+  const cssW = canvas.clientWidth || 900;
+  const cssH = canvas.clientHeight || 220;
   canvas.width = Math.floor(cssW * dpr);
   canvas.height = Math.floor(cssH * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -82,7 +102,7 @@ function drawChart(points) {
   const temps = points.map((p) => p.tempC);
   const min = Math.min(...temps);
   const max = Math.max(...temps);
-  const pad = 12;
+  const pad = 16;
   const span = Math.max(max - min, 1);
 
   ctx.strokeStyle = "rgba(232,238,245,0.12)";
@@ -184,9 +204,8 @@ async function powerAction(action) {
 }
 
 function wireUi() {
-  $("btn-refresh").addEventListener("click", () => {
-    refresh();
-    scheduleRefresh();
+  document.querySelectorAll(".view-btn").forEach((btn) => {
+    btn.addEventListener("click", () => setView(btn.dataset.view));
   });
 
   document.querySelectorAll(".seg").forEach((btn) => {
@@ -213,6 +232,9 @@ function wireUi() {
 }
 
 wireUi();
+setView("live");
 refresh();
 scheduleRefresh();
-window.addEventListener("resize", () => refresh());
+window.addEventListener("resize", () => {
+  if (currentView === "historic") refresh();
+});

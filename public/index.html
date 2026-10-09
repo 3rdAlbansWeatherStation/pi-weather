@@ -21,103 +21,127 @@
         <p class="brand">3rd Albans Weather</p>
         <p class="meta" id="updated">Waiting for data…</p>
       </div>
-      <div class="top-actions">
-        <button type="button" class="ghost" id="btn-refresh" aria-label="Refresh">Refresh</button>
-        <button type="button" class="danger" id="btn-power">Power</button>
+      <div class="view-toggle" role="tablist" aria-label="View">
+        <button type="button" class="view-btn active" data-view="live" role="tab" aria-selected="true">Live</button>
+        <button type="button" class="view-btn" data-view="historic" role="tab" aria-selected="false">Historic</button>
       </div>
     </header>
 
-    <main class="layout">
-      <section class="hero" aria-labelledby="temp-label">
-        <p class="eyebrow" id="condition">—</p>
-        <p class="temp" id="temp-label"><span id="temp">--</span><span class="unit">°</span></p>
-        <p class="sub" id="feels">Feels like —</p>
-        <div class="hero-metrics">
-          <div>
-            <span class="label">Humidity</span>
-            <strong id="humidity">—</strong>
-          </div>
-          <div>
-            <span class="label">Wind</span>
-            <strong id="wind">—</strong>
-          </div>
-          <div>
-            <span class="label">Rain today</span>
-            <strong id="rain">—</strong>
-          </div>
-          <div>
-            <span class="label">Pressure</span>
-            <strong id="pressure">—</strong>
+    <main id="view-live" class="view live-view">
+      <section class="wind-compass" aria-label="Wind direction and speed">
+        <div class="compass" id="compass">
+          <span class="compass-n">N</span>
+          <span class="compass-e">E</span>
+          <span class="compass-s">S</span>
+          <span class="compass-w">W</span>
+          <div class="compass-ring"></div>
+          <div class="compass-needle" id="wind-needle"></div>
+          <div class="compass-center">
+            <strong id="wind-speed">--</strong>
+            <span>m/s</span>
+            <em id="wind-label">Wind</em>
           </div>
         </div>
+        <p class="wind-blurb" id="wind-blurb">Which way the wind is blowing, and how fast</p>
       </section>
 
-      <div class="side">
-        <section class="panel history" aria-labelledby="history-title">
-          <div class="panel-head">
-            <h2 id="history-title">History</h2>
-            <div class="segmented" role="tablist" aria-label="History range">
-              <button type="button" class="seg active" data-range="week">Week</button>
-              <button type="button" class="seg" data-range="month">Month</button>
-            </div>
-          </div>
-          <div class="stats" id="history-stats">
-            <div class="stat">
-              <span class="label">High</span>
-              <strong id="h-high">—</strong>
-            </div>
-            <div class="stat">
-              <span class="label">Low</span>
-              <strong id="h-low">—</strong>
-            </div>
-            <div class="stat">
-              <span class="label">Average</span>
-              <strong id="h-avg">—</strong>
-            </div>
-            <div class="stat">
-              <span class="label">Rain</span>
-              <strong id="h-rain">—</strong>
-            </div>
-          </div>
-          <canvas id="chart" width="480" height="100" aria-label="Temperature history chart"></canvas>
-        </section>
+      <section class="boxes" aria-label="Live weather readings">
+        <article class="box">
+          <h3>Outside temp</h3>
+          <p class="kid">How warm it is outside</p>
+          <p class="value"><span id="temp">--</span><span class="unit">°C</span></p>
+        </article>
+        <article class="box">
+          <h3>Feels like</h3>
+          <p class="kid">What it feels like on your skin</p>
+          <p class="value"><span id="feels">--</span><span class="unit">°C</span></p>
+        </article>
+        <article class="box">
+          <h3>Humidity</h3>
+          <p class="kid">How damp the air is</p>
+          <p class="value"><span id="humidity">--</span><span class="unit">%</span></p>
+        </article>
+        <article class="box">
+          <h3>Rain today</h3>
+          <p class="kid">How much rain has fallen today</p>
+          <p class="value"><span id="rain">--</span><span class="unit">mm</span></p>
+        </article>
+        <article class="box">
+          <h3>Pressure</h3>
+          <p class="kid">Air pressing down — helps guess the weather</p>
+          <p class="value"><span id="pressure">--</span><span class="unit">hPa</span></p>
+        </article>
+        <article class="box">
+          <h3>Gust</h3>
+          <p class="kid">The strongest recent blast of wind</p>
+          <p class="value"><span id="gust">--</span><span class="unit">m/s</span></p>
+        </article>
+        <article class="box">
+          <h3>Inside</h3>
+          <p class="kid">Temperature and dampness in the hut</p>
+          <p class="value"><span id="indoor">--</span></p>
+        </article>
+        <article class="box">
+          <h3>UV</h3>
+          <p class="kid">How strong the sun’s UV is (0–15)</p>
+          <p class="value"><span id="uvi">--</span></p>
+        </article>
+      </section>
 
-        <section class="panel radar" aria-label="Local radar map">
-          <div class="panel-head">
-            <h2>Radar</h2>
-            <span class="radar-credit">Windy · St Albans</span>
-          </div>
-          <div class="radar-frame">
-            <iframe
-              title="Windy radar map for St Albans"
-              src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=51.736&lon=-0.354&message=true"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen
-            ></iframe>
-          </div>
-        </section>
-      </div>
+      <section class="panel radar live-radar" aria-label="Local radar map">
+        <div class="panel-head">
+          <h2>Radar</h2>
+          <span class="radar-credit">Windy · St Albans</span>
+        </div>
+        <div class="radar-frame">
+          <iframe
+            title="Windy radar map for St Albans"
+            src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=51.736&lon=-0.354&message=true"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
     </main>
 
-    <section class="strip" aria-label="Indoor and extra readings">
-      <div>
-        <span class="label">Indoor</span>
-        <strong id="indoor">—</strong>
-      </div>
-      <div>
-        <span class="label">Gust</span>
-        <strong id="gust">—</strong>
-      </div>
-      <div>
-        <span class="label">UV</span>
-        <strong id="uvi">—</strong>
-      </div>
-      <div>
-        <span class="label">Source</span>
-        <strong id="source">—</strong>
-      </div>
-    </section>
+    <main id="view-historic" class="view historic-view" hidden>
+      <section class="panel history" aria-labelledby="history-title">
+        <div class="panel-head">
+          <h2 id="history-title">History</h2>
+          <div class="segmented" role="tablist" aria-label="History range">
+            <button type="button" class="seg active" data-range="week">Week</button>
+            <button type="button" class="seg" data-range="month">Month</button>
+          </div>
+        </div>
+        <div class="stats" id="history-stats">
+          <div class="stat">
+            <span class="label">High</span>
+            <strong id="h-high">—</strong>
+            <span class="kid-inline">Hottest</span>
+          </div>
+          <div class="stat">
+            <span class="label">Low</span>
+            <strong id="h-low">—</strong>
+            <span class="kid-inline">Coldest</span>
+          </div>
+          <div class="stat">
+            <span class="label">Average</span>
+            <strong id="h-avg">—</strong>
+            <span class="kid-inline">Typical</span>
+          </div>
+          <div class="stat">
+            <span class="label">Rain</span>
+            <strong id="h-rain">—</strong>
+            <span class="kid-inline">Total rain</span>
+          </div>
+        </div>
+        <canvas id="chart" width="900" height="220" aria-label="Temperature history chart"></canvas>
+        <p class="history-note">Mock history for now — real highs, lows and averages when the station is connected.</p>
+      </section>
+    </main>
+
+    <button type="button" class="danger power-fab" id="btn-power">Power</button>
 
     <dialog id="power-dialog">
       <div class="power-card">
