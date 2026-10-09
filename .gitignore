@@ -26,5 +26,9 @@ site/**/*secret*
 site/**/*credential*
 site/**/*api*key*
 
-# Keep processed logo in public/; ignore duplicate root exports if desired
-# cropped-Scout_linear-purple.png may stay local source
+# Keep processed logo in public/; ignore local brand source exports
+cropped-Scout_linear-purple*.png
+png-transparent-line-leader-scouting*.png
+scouts_brand_guidelines*.pdf
+scripts/_audit-pi.py
+scripts/_sync-pi-git.py
