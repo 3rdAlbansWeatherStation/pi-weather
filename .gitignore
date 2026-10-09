@@ -18,6 +18,8 @@ Thumbs.db
 secrets/
 credentials*
 **/passwords*
+docs/pi-connect.local.md
+**/*.local.md
 # Never put keys in the public Pages tree (use GitHub Actions secrets later)
 site/**/.env*
 site/**/*secret*

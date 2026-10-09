@@ -1,6 +1,9 @@
-# Public website (`site/`)
+# Public website (`site/`) — GitHub Pages only
 
-Static GitHub Pages copy of the Pi weather UI. Same Scouts look; **no Power controls**.
+**Different site from the Pi kiosk.** The Pi uses `public/` + Express; this folder is only for
+[https://3rdalbansweatherstation.github.io/](https://3rdalbansweatherstation.github.io/).
+
+Same Scouts look when we choose to match it; **no Power controls**. Never deploy this folder to the Pi.
 
 ## Data (safe by design)
 
