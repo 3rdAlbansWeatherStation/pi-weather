@@ -52,34 +52,52 @@
         </div>
       </section>
 
-      <section class="panel history" aria-labelledby="history-title">
-        <div class="panel-head">
-          <h2 id="history-title">History</h2>
-          <div class="segmented" role="tablist" aria-label="History range">
-            <button type="button" class="seg active" data-range="week">Week</button>
-            <button type="button" class="seg" data-range="month">Month</button>
+      <div class="side">
+        <section class="panel history" aria-labelledby="history-title">
+          <div class="panel-head">
+            <h2 id="history-title">History</h2>
+            <div class="segmented" role="tablist" aria-label="History range">
+              <button type="button" class="seg active" data-range="week">Week</button>
+              <button type="button" class="seg" data-range="month">Month</button>
+            </div>
           </div>
-        </div>
-        <div class="stats" id="history-stats">
-          <div class="stat">
-            <span class="label">High</span>
-            <strong id="h-high">—</strong>
+          <div class="stats" id="history-stats">
+            <div class="stat">
+              <span class="label">High</span>
+              <strong id="h-high">—</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Low</span>
+              <strong id="h-low">—</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Average</span>
+              <strong id="h-avg">—</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Rain</span>
+              <strong id="h-rain">—</strong>
+            </div>
           </div>
-          <div class="stat">
-            <span class="label">Low</span>
-            <strong id="h-low">—</strong>
+          <canvas id="chart" width="480" height="100" aria-label="Temperature history chart"></canvas>
+        </section>
+
+        <section class="panel radar" aria-label="Local radar map">
+          <div class="panel-head">
+            <h2>Radar</h2>
+            <span class="radar-credit">Windy · St Albans</span>
           </div>
-          <div class="stat">
-            <span class="label">Average</span>
-            <strong id="h-avg">—</strong>
+          <div class="radar-frame">
+            <iframe
+              title="Windy radar map for St Albans"
+              src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=51.736&lon=-0.354&message=true"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
           </div>
-          <div class="stat">
-            <span class="label">Rain</span>
-            <strong id="h-rain">—</strong>
-          </div>
-        </div>
-        <canvas id="chart" width="480" height="160" aria-label="Temperature history chart"></canvas>
-      </section>
+        </section>
+      </div>
     </main>
 
     <section class="strip" aria-label="Indoor and extra readings">

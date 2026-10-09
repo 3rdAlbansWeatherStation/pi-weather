@@ -180,8 +180,9 @@ The live hub endpoint is **current + rain totals**, not a full multi-week series
 - Outdoor humidity, wind + direction, rain today, relative pressure
 - Indoor temp/humidity (strip)
 - Gust, UVI, last updated, source
+- **Windy radar block** (compact panel, St Albans coords — not fullscreen)
 
-**Second tap / history panel**
+**History panel**
 - Week / month: outdoor temp high · low · avg
 - Rain week / month totals
 - Simple temp sparkline (already started)
@@ -195,9 +196,16 @@ Same live fields as Pi, plus:
 
 - Multi-chart history (temp, humidity, pressure, rain, wind)
 - Week / month / year rain
+- **Same Windy embed** as a page block (can use larger ~650×450 there)
 - Wind rose (optional)
 - Station “about” (Scout hut, no secrets)
 - Mobile-friendly layout (not locked to 1024×600)
+
+Windy embed (St Albans):
+
+```html
+<iframe width="650" height="450" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=51.736&lon=-0.354&message=true" frameborder="0"></iframe>
+```
 
 Share **read-only** data; never expose shutdown APIs publicly without auth.
 

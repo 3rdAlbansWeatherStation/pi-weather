@@ -113,6 +113,13 @@ button.danger {
   min-height: 0;
 }
 
+.side {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 10px;
+  min-height: 0;
+}
+
 .hero,
 .panel {
   background: var(--panel);
@@ -122,6 +129,37 @@ button.danger {
   backdrop-filter: blur(10px);
   padding: 16px 18px;
   min-height: 0;
+}
+
+.history {
+  display: flex;
+  flex-direction: column;
+}
+
+.radar {
+  padding: 10px 12px 12px;
+}
+
+.radar-credit {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.radar-frame {
+  position: relative;
+  width: 100%;
+  height: 148px;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #0a1520;
+}
+
+.radar-frame iframe {
+  border: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .eyebrow {
@@ -223,8 +261,10 @@ button.danger {
 
 #chart {
   width: 100%;
-  height: 150px;
+  height: 96px;
   display: block;
+  flex: 1;
+  min-height: 72px;
 }
 
 .strip {
@@ -293,6 +333,10 @@ button:disabled {
 
   .layout {
     grid-template-columns: 1fr;
+  }
+
+  .radar-frame {
+    height: 220px;
   }
 
   .stats,
