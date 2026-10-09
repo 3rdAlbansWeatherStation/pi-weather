@@ -32,7 +32,7 @@ def main() -> None:
     user = "wilksy"
     password = load_password()
 
-    print("Deploying PI KIOSK (public/) →", host)
+    print("Deploying PI KIOSK (public/) ->", host)
     print("Not deploying site/ or github.io.")
 
     ssh = paramiko.SSHClient()
