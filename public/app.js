@@ -131,15 +131,46 @@ function scheduleRefresh() {
   refreshTimer = setInterval(refresh, REFRESH_MS);
 }
 
+let pendingPowerAction = null;
+
+function resetPowerDialog() {
+  pendingPowerAction = null;
+  $("power-step-menu").hidden = false;
+  $("power-step-confirm").hidden = true;
+  $("power-hint").hidden = true;
+  $("power-hint").textContent = "";
+  $("btn-power-confirm").disabled = false;
+}
+
+function showPowerConfirm(action) {
+  pendingPowerAction = action;
+  $("power-step-menu").hidden = true;
+  $("power-step-confirm").hidden = false;
+  $("power-hint").hidden = true;
+  if (action === "shutdown") {
+    $("power-confirm-title").textContent = "Shut down the station?";
+    $("power-confirm-text").textContent =
+      "This turns the display off. Only leaders should do this — it protects the SD card.";
+    $("btn-power-confirm").textContent = "Yes, shut down";
+  } else {
+    $("power-confirm-title").textContent = "Reboot the station?";
+    $("power-confirm-text").textContent =
+      "This restarts the display. Only do this if something looks stuck.";
+    $("btn-power-confirm").textContent = "Yes, reboot";
+  }
+}
+
 async function powerAction(action) {
   const hint = $("power-hint");
   hint.hidden = false;
   hint.textContent = action === "shutdown" ? "Shutting down…" : "Rebooting…";
+  $("btn-power-confirm").disabled = true;
   try {
     const res = await fetch(`/api/power/${action}`, { method: "POST" });
     const body = await res.json().catch(() => ({}));
     if (!res.ok) {
-      hint.textContent = body.error || "Power action blocked (dev mode).";
+      hint.textContent = body.error || "Power action blocked.";
+      $("btn-power-confirm").disabled = false;
       return;
     }
     hint.textContent =
@@ -148,6 +179,7 @@ async function powerAction(action) {
         : "Reboot requested.";
   } catch {
     hint.textContent = "Could not reach power API.";
+    $("btn-power-confirm").disabled = false;
   }
 }
 
@@ -168,11 +200,16 @@ function wireUi() {
 
   const dialog = $("power-dialog");
   $("btn-power").addEventListener("click", () => {
-    $("power-hint").hidden = true;
+    resetPowerDialog();
     dialog.showModal();
   });
-  $("btn-shutdown").addEventListener("click", () => powerAction("shutdown"));
-  $("btn-reboot").addEventListener("click", () => powerAction("reboot"));
+  $("btn-power-cancel").addEventListener("click", () => dialog.close());
+  $("btn-power-back").addEventListener("click", () => resetPowerDialog());
+  $("btn-shutdown").addEventListener("click", () => showPowerConfirm("shutdown"));
+  $("btn-reboot").addEventListener("click", () => showPowerConfirm("reboot"));
+  $("btn-power-confirm").addEventListener("click", () => {
+    if (pendingPowerAction) powerAction(pendingPowerAction);
+  });
 }
 
 wireUi();

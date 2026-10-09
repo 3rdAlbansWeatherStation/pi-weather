@@ -102,16 +102,27 @@
     </section>
 
     <dialog id="power-dialog">
-      <form method="dialog" class="power-card">
-        <h3>Power</h3>
-        <p>Shut down cleanly to protect the SD card. Avoid pulling power while the Pi is on.</p>
-        <div class="power-actions">
-          <button type="submit" class="ghost" value="cancel">Cancel</button>
-          <button type="button" class="ghost" id="btn-reboot">Reboot</button>
-          <button type="button" class="danger" id="btn-shutdown">Shut down</button>
+      <div class="power-card">
+        <div id="power-step-menu">
+          <h3>Power</h3>
+          <p>Leaders only. Kids: please leave this alone — wrong shutdown can damage the SD card.</p>
+          <div class="power-actions">
+            <button type="button" class="ghost" id="btn-power-cancel">Cancel</button>
+            <button type="button" class="ghost" id="btn-reboot">Reboot…</button>
+            <button type="button" class="danger" id="btn-shutdown">Shut down…</button>
+          </div>
         </div>
-        <p class="hint" id="power-hint" hidden></p>
-      </form>
+
+        <div id="power-step-confirm" hidden>
+          <h3 id="power-confirm-title">Are you sure?</h3>
+          <p id="power-confirm-text">Please confirm this action.</p>
+          <div class="power-actions">
+            <button type="button" class="ghost" id="btn-power-back">No, go back</button>
+            <button type="button" class="danger" id="btn-power-confirm">Yes, continue</button>
+          </div>
+          <p class="hint" id="power-hint" hidden></p>
+        </div>
+      </div>
     </dialog>
 
     <script src="/app.js"></script>

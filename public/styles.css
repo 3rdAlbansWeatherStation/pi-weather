@@ -281,6 +281,11 @@ dialog::backdrop {
   font-size: 0.9rem;
 }
 
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
   body {
     overflow: auto;
