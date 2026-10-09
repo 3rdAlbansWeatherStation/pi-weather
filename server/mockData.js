@@ -32,16 +32,24 @@ function mockCurrent() {
       speedMs: Number((1.2 + seededNoise(hour + 4) * 3.5).toFixed(1)),
       gustMs: Number((2.5 + seededNoise(hour + 5) * 5).toFixed(1)),
       directionDeg: Math.round(seededNoise(hour + 6) * 360),
+      dayMaxMs: Number((3.5 + seededNoise(now.getDate() + 11) * 6).toFixed(1)),
     },
     rain: {
       rateMm: Number((seededNoise(hour + 7) > 0.82 ? seededNoise(hour + 8) * 2.4 : 0).toFixed(1)),
       dailyMm: Number((seededNoise(now.getDate()) * 4.2).toFixed(1)),
+      hourMm: Number((seededNoise(hour + 12) > 0.7 ? seededNoise(hour + 13) * 1.6 : 0).toFixed(1)),
+      weekMm: Number((seededNoise(now.getDate() + 3) * 18 + 2).toFixed(1)),
     },
     pressure: {
       relHpa: Number((1012 + (seededNoise(hour + 9) - 0.5) * 12).toFixed(1)),
     },
     solar: {
       uvi: Number((clamp(Math.sin(((hour - 6) / 12) * Math.PI) * 6, 0, 8)).toFixed(1)),
+      lightKlux: Number((clamp(Math.sin(((hour - 6) / 12) * Math.PI) * 80, 0, 95)).toFixed(0)),
+    },
+    sensor: {
+      battery: seededNoise(now.getDate() + 20) > 0.15 ? "Good" : "Low",
+      signal: seededNoise(hour + 21) > 0.2 ? "Strong" : "Weak",
     },
     condition: tempC < 8 ? "Cool" : humidity > 75 ? "Damp" : "Fair",
   };
@@ -100,11 +108,13 @@ function summarize(points) {
 }
 
 function mockHistory(range) {
-  const days = range === "month" ? 30 : 7;
-  const points = buildSeries(days, range === "month" ? 8 : 24);
+  const key = String(range || "week").toLowerCase();
+  const days = key === "year" ? 365 : key === "month" ? 30 : 7;
+  const pointsPerDay = key === "year" ? 1 : key === "month" ? 8 : 24;
+  const points = buildSeries(days, pointsPerDay);
   return {
     source: "mock",
-    range: days === 30 ? "month" : "week",
+    range: key === "year" ? "year" : key === "month" ? "month" : "week",
     updatedAt: new Date().toISOString(),
     summary: summarize(points),
     points,

@@ -5,7 +5,7 @@ Reference for the **3rd Albans** weather station kit and both UIs:
 | Surface | Role |
 |---------|------|
 | **Pi kiosk** (`pi-weather` on the LAN) | Always-on hut display — current conditions first, short history |
-| **Public GitHub site** (not built yet) | Shareable web page — same live data + richer history / charts |
+| **Public GitHub site** (`site/`) | Shareable Pages UI — mock JSON for now; Ecowitt cloud later (keys in Actions secrets only) |
 
 **Hardware note:** “GW3002” is Ecowitt’s **bundle**: **GW3000** Ethernet/Wi‑Fi gateway (with SD slot) + **WS69** 7‑in‑1 outdoor array. Your guess is correct: the **gateway** provides **indoor temp/humidity** (external probe) and **barometric pressure** (internal).
 
@@ -204,7 +204,7 @@ Same live fields as Pi, plus:
 Windy embed (St Albans):
 
 ```html
-<iframe width="650" height="450" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=51.736&lon=-0.354&message=true" frameborder="0"></iframe>
+<iframe width="450" height="450" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=mph&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=51.762&lon=-0.345&pressure=true&message=true" frameborder="0"></iframe>
 ```
 
 Share **read-only** data; never expose shutdown APIs publicly without auth.

@@ -18,3 +18,11 @@ Thumbs.db
 secrets/
 credentials*
 **/passwords*
+# Never put keys in the public Pages tree (use GitHub Actions secrets later)
+site/**/.env*
+site/**/*secret*
+site/**/*credential*
+site/**/*api*key*
+
+# Keep processed logo in public/; ignore duplicate root exports if desired
+# cropped-Scout_linear-purple.png may stay local source

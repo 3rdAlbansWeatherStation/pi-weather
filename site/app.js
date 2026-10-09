@@ -1,4 +1,10 @@
-const REFRESH_MS = 30_000;
+/**
+ * Public GitHub Pages UI — same design as the Pi kiosk.
+ * Loads static JSON from ./data/ (mock until Ecowitt cloud Actions are wired).
+ * Never put API keys or credentials in this folder.
+ */
+
+const REFRESH_MS = 60_000;
 let historyRange = "week";
 let currentView = "live";
 let livePage = "1";
@@ -19,6 +25,11 @@ const BAND = {
   blueFill: "rgba(0,109,223,0.2)",
 };
 
+function dataUrl(name) {
+  // Relative paths work on project Pages (…/pi-weather/) and locally
+  return new URL(`./data/${name}`, window.location.href).toString();
+}
+
 function fmtLiveClock(date = new Date()) {
   return date.toLocaleString(undefined, {
     weekday: "long",
@@ -36,12 +47,6 @@ function startClock() {
   clearInterval(clockTimer);
   tickClock();
   clockTimer = setInterval(tickClock, 1000);
-}
-
-function windDir(deg) {
-  if (deg == null || Number.isNaN(Number(deg))) return "—";
-  const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-  return dirs[Math.round(Number(deg) / 45) % 8];
 }
 
 /** Display wind in mph; API keeps m/s. */
@@ -144,13 +149,18 @@ function renderCurrent(data) {
 
   const needle = $("wind-needle");
   const speedN = Number(speed) || 0;
-  // Grow with wind; soft cap around 12 m/s (~27 mph) so the UI stays readable
   const strength = Math.min(Math.max(speedN / 12, 0), 1);
-  const needleH = 30 + strength * 16; // 30% → 46%
-  const tipScale = 1 + strength * 0.75; // 1 → 1.75
+  const needleH = 30 + strength * 16;
+  const tipScale = 1 + strength * 0.75;
   needle.style.setProperty("--needle-h", `${needleH.toFixed(1)}%`);
   needle.style.setProperty("--tip-scale", tipScale.toFixed(2));
   needle.style.transform = `rotate(${Number(deg) || 0}deg)`;
+
+  const banner = $("demo-banner");
+  if (banner) {
+    const isMock = (data.source || "mock") === "mock";
+    banner.hidden = !isMock;
+  }
 }
 
 function prepareCanvas(canvas) {
@@ -296,7 +306,6 @@ function drawWindRose(points) {
   const radius = Math.min(cssW, cssH) * 0.38;
   const maxCount = Math.max(...bins.map((b) => b.count), 1);
 
-  // rings
   ctx.strokeStyle = "rgba(232,238,245,0.14)";
   ctx.lineWidth = 1;
   for (let r = 1; r <= 3; r += 1) {
@@ -305,7 +314,6 @@ function drawWindRose(points) {
     ctx.stroke();
   }
 
-  // axes
   labels.forEach((label, i) => {
     const ang = ((i * 45 - 90) * Math.PI) / 180;
     ctx.beginPath();
@@ -324,7 +332,6 @@ function drawWindRose(points) {
     );
   });
 
-  // petals (speed-weighted length)
   bins.forEach((bin, i) => {
     if (!bin.count) return;
     const ang = ((i * 45 - 90) * Math.PI) / 180;
@@ -394,9 +401,12 @@ function renderHistory(data) {
 
 async function refresh() {
   try {
+    const range = ["week", "month", "year"].includes(historyRange)
+      ? historyRange
+      : "week";
     const [current, history] = await Promise.all([
-      getJson("/api/current"),
-      getJson(`/api/history?range=${historyRange}`),
+      getJson(dataUrl("current.json")),
+      getJson(dataUrl(`history-${range}.json`)),
     ]);
     renderCurrent(current);
     renderHistory(history);
@@ -408,58 +418,6 @@ async function refresh() {
 function scheduleRefresh() {
   clearInterval(refreshTimer);
   refreshTimer = setInterval(refresh, REFRESH_MS);
-}
-
-let pendingPowerAction = null;
-
-function resetPowerDialog() {
-  pendingPowerAction = null;
-  $("power-step-menu").hidden = false;
-  $("power-step-confirm").hidden = true;
-  $("power-hint").hidden = true;
-  $("power-hint").textContent = "";
-  $("btn-power-confirm").disabled = false;
-}
-
-function showPowerConfirm(action) {
-  pendingPowerAction = action;
-  $("power-step-menu").hidden = true;
-  $("power-step-confirm").hidden = false;
-  $("power-hint").hidden = true;
-  if (action === "shutdown") {
-    $("power-confirm-title").textContent = "Shut down the station?";
-    $("power-confirm-text").textContent =
-      "This turns the display off. Only leaders should do this — it protects the SD card.";
-    $("btn-power-confirm").textContent = "Yes, shut down";
-  } else {
-    $("power-confirm-title").textContent = "Reboot the station?";
-    $("power-confirm-text").textContent =
-      "This restarts the display. Only do this if something looks stuck.";
-    $("btn-power-confirm").textContent = "Yes, reboot";
-  }
-}
-
-async function powerAction(action) {
-  const hint = $("power-hint");
-  hint.hidden = false;
-  hint.textContent = action === "shutdown" ? "Shutting down…" : "Rebooting…";
-  $("btn-power-confirm").disabled = true;
-  try {
-    const res = await fetch(`/api/power/${action}`, { method: "POST" });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      hint.textContent = body.error || "Power action blocked.";
-      $("btn-power-confirm").disabled = false;
-      return;
-    }
-    hint.textContent =
-      action === "shutdown"
-        ? "Shutdown requested. Screen will go dark shortly."
-        : "Reboot requested.";
-  } catch {
-    hint.textContent = "Could not reach power API.";
-    $("btn-power-confirm").disabled = false;
-  }
 }
 
 function wireUi() {
@@ -482,19 +440,6 @@ function wireUi() {
       historyRange = btn.dataset.range;
       refresh();
     });
-  });
-
-  const dialog = $("power-dialog");
-  $("btn-power").addEventListener("click", () => {
-    resetPowerDialog();
-    dialog.showModal();
-  });
-  $("btn-power-cancel").addEventListener("click", () => dialog.close());
-  $("btn-power-back").addEventListener("click", () => resetPowerDialog());
-  $("btn-shutdown").addEventListener("click", () => showPowerConfirm("shutdown"));
-  $("btn-reboot").addEventListener("click", () => showPowerConfirm("reboot"));
-  $("btn-power-confirm").addEventListener("click", () => {
-    if (pendingPowerAction) powerAction(pendingPowerAction);
   });
 }
 

@@ -11,14 +11,18 @@
       href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="sky" aria-hidden="true"></div>
 
+    <p class="demo-banner" id="demo-banner" hidden>
+      Demo data — not live station readings yet.
+    </p>
+
     <header class="top">
       <div class="brand-block">
-        <img class="scout-logo" src="/scout-logo.png" alt="Scouts St Albans" width="280" height="90" />
+        <img class="scout-logo" src="./scout-logo.png" alt="Scouts St Albans" width="280" height="90" />
         <div class="brand-line">
           <p class="brand">3rd St Albans Weather Station</p>
           <p class="meta" id="updated">—</p>
@@ -289,32 +293,6 @@
       </div>
     </main>
 
-    <button type="button" class="danger power-fab" id="btn-power">Power</button>
-
-    <dialog id="power-dialog">
-      <div class="power-card">
-        <div id="power-step-menu">
-          <h3>Power</h3>
-          <p>Leaders only. Kids: please leave this alone — wrong shutdown can damage the SD card.</p>
-          <div class="power-actions">
-            <button type="button" class="ghost" id="btn-power-cancel">Cancel</button>
-            <button type="button" class="ghost" id="btn-reboot">Reboot…</button>
-            <button type="button" class="danger" id="btn-shutdown">Shut down…</button>
-          </div>
-        </div>
-
-        <div id="power-step-confirm" hidden>
-          <h3 id="power-confirm-title">Are you sure?</h3>
-          <p id="power-confirm-text">Please confirm this action.</p>
-          <div class="power-actions">
-            <button type="button" class="ghost" id="btn-power-back">No, go back</button>
-            <button type="button" class="danger" id="btn-power-confirm">Yes, continue</button>
-          </div>
-          <p class="hint" id="power-hint" hidden></p>
-        </div>
-      </div>
-    </dialog>
-
-    <script src="/app.js"></script>
+    <script src="./app.js"></script>
   </body>
 </html>

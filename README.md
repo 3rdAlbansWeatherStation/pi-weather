@@ -77,11 +77,20 @@ Use the on-screen **Power → Shut down** control. After the kiosk is stable, en
 Kit: **Ecowitt GW3002** = **GW3000** hub + **WS69** outdoor array.  
 Full field list (live + history + Pi vs public site): [`docs/ecowitt-gw3002-ws69-data.md`](docs/ecowitt-gw3002-ws69-data.md).
 
+## Public GitHub site
+
+- **Live:** [https://3rdalbansweatherstation.github.io/](https://3rdalbansweatherstation.github.io/)  
+  (repo [`3rdAlbansWeatherStation.github.io`](https://github.com/3rdAlbansWeatherStation/3rdAlbansWeatherStation.github.io) — root URL, no `/pi-weather/`)
+- **Source copy in this repo:** [`site/`](site/) (same design as the Pi; mock data for now)
+
+**Never commit API keys or hut credentials** into `site/` or the Pages repo — see [`site/README.md`](site/README.md).
+
 ## Repo layout
 
 ```
 server/           Node API
 public/           Touch UI (1024×600 first)
+site/             Public GitHub Pages UI (static + mock JSON)
 scripts/pi/       Kiosk + one-shot setup
 systemd/          pi-weather.service
 docs/             Hardware / data documentation

@@ -1234,3 +1234,29 @@ dialog::backdrop {
     grid-column: 1 / -1;
   }
 }
+
+/* —— GitHub Pages (site/) overrides: scrollable web, no kiosk lock —— */
+html,
+body {
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.demo-banner {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 4px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(255, 230, 39, 0.16);
+  border: 1px solid rgba(255, 230, 39, 0.45);
+  color: var(--warm);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.power-fab,
+#power-dialog {
+  display: none !important;
+}
