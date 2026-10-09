@@ -72,6 +72,11 @@ Copy `.env.example` → `.env`:
 
 Use the on-screen **Power → Shut down** control. After the kiosk is stable, enable **Overlay File System** in `raspi-config` (Performance Options). Do this last — updates then require disabling the overlay first.
 
+## Hardware data reference
+
+Kit: **Ecowitt GW3002** = **GW3000** hub + **WS69** outdoor array.  
+Full field list (live + history + Pi vs public site): [`docs/ecowitt-gw3002-ws69-data.md`](docs/ecowitt-gw3002-ws69-data.md).
+
 ## Repo layout
 
 ```
@@ -79,4 +84,5 @@ server/           Node API
 public/           Touch UI (1024×600 first)
 scripts/pi/       Kiosk + one-shot setup
 systemd/          pi-weather.service
+docs/             Hardware / data documentation
 ```
