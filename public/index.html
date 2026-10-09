@@ -28,22 +28,40 @@
     </header>
 
     <main id="view-live" class="view live-view">
-      <section class="wind-compass" aria-label="Wind direction and speed">
-        <div class="compass" id="compass">
-          <span class="compass-n">N</span>
-          <span class="compass-e">E</span>
-          <span class="compass-s">S</span>
-          <span class="compass-w">W</span>
-          <div class="compass-ring"></div>
-          <div class="compass-needle" id="wind-needle"></div>
-          <div class="compass-center">
-            <strong id="wind-speed">--</strong>
-            <span>m/s</span>
-            <em id="wind-label">Wind</em>
+      <aside class="live-left">
+        <section class="wind-compass" aria-label="Wind direction and speed">
+          <div class="compass" id="compass">
+            <span class="compass-n">N</span>
+            <span class="compass-e">E</span>
+            <span class="compass-s">S</span>
+            <span class="compass-w">W</span>
+            <div class="compass-ring"></div>
+            <div class="compass-needle" id="wind-needle"></div>
+            <div class="compass-center">
+              <strong id="wind-speed">--</strong>
+              <span>m/s</span>
+              <em id="wind-label">Wind</em>
+            </div>
           </div>
-        </div>
-        <p class="wind-blurb" id="wind-blurb">Which way the wind is blowing, and how fast</p>
-      </section>
+          <p class="wind-blurb" id="wind-blurb">Which way the wind is blowing, and how fast</p>
+        </section>
+
+        <section class="panel radar live-radar" aria-label="Local radar map">
+          <div class="panel-head">
+            <h2>Radar</h2>
+            <span class="radar-credit">Windy · St Albans</span>
+          </div>
+          <div class="radar-frame">
+            <iframe
+              title="Windy radar map for St Albans"
+              src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=51.736&lon=-0.354&message=true"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </section>
+      </aside>
 
       <section class="boxes" aria-label="Live weather readings">
         <article class="box">
@@ -86,22 +104,6 @@
           <p class="kid">How strong the sun’s UV is (0–15)</p>
           <p class="value"><span id="uvi">--</span></p>
         </article>
-      </section>
-
-      <section class="panel radar live-radar" aria-label="Local radar map">
-        <div class="panel-head">
-          <h2>Radar</h2>
-          <span class="radar-credit">Windy · St Albans</span>
-        </div>
-        <div class="radar-frame">
-          <iframe
-            title="Windy radar map for St Albans"
-            src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=51.736&lon=-0.354&message=true"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
-          ></iframe>
-        </div>
       </section>
     </main>
 

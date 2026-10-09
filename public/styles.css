@@ -140,10 +140,29 @@ button:disabled {
 
 .live-view {
   display: grid;
-  grid-template-columns: 210px 1fr 220px;
+  grid-template-columns: auto 1fr;
   gap: 10px;
   min-height: 0;
   align-items: stretch;
+}
+
+.live-left {
+  --tile: min(46vh, calc((100vh - 110px) / 2));
+  display: grid;
+  grid-template-rows: var(--tile) var(--tile);
+  gap: 10px;
+  width: var(--tile);
+  min-height: 0;
+  height: fit-content;
+  align-self: center;
+}
+
+.wind-compass,
+.live-radar {
+  min-height: 0;
+  width: var(--tile);
+  height: var(--tile);
+  overflow: hidden;
 }
 
 .wind-compass {
@@ -151,8 +170,8 @@ button:disabled {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 12px;
+  gap: 6px;
+  padding: 10px;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -161,8 +180,11 @@ button:disabled {
 
 .compass {
   position: relative;
-  width: 176px;
-  height: 176px;
+  width: min(86%, 100%);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  flex: 1;
+  max-height: calc(100% - 2rem);
   border-radius: 50%;
   background:
     radial-gradient(circle at center, rgba(126, 200, 227, 0.12), transparent 55%),
@@ -196,10 +218,10 @@ button:disabled {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 4px;
-  height: 58px;
-  margin-left: -2px;
-  margin-top: -58px;
+  width: 5px;
+  height: 38%;
+  margin-left: -2.5px;
+  margin-top: -38%;
   transform-origin: bottom center;
   transform: rotate(0deg);
   background: linear-gradient(to top, transparent 0%, var(--warm) 35%, #fff4d6 100%);
@@ -232,21 +254,21 @@ button:disabled {
 
 .compass-center strong {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: clamp(2.2rem, 5vh, 3.2rem);
   line-height: 1;
   font-weight: 400;
 }
 
 .compass-center span {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   margin-top: 2px;
 }
 
 .compass-center em {
   margin-top: 4px;
   font-style: normal;
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   color: var(--accent);
   font-weight: 600;
   text-transform: uppercase;
@@ -258,15 +280,16 @@ button:disabled {
   text-align: center;
   color: var(--muted);
   font-size: 0.78rem;
-  line-height: 1.3;
-  max-width: 11rem;
+  line-height: 1.25;
+  max-width: 90%;
+  flex-shrink: 0;
 }
 
 .boxes {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   min-height: 0;
 }
 
@@ -274,38 +297,45 @@ button:disabled {
   background: var(--box);
   border: 1px solid var(--line);
   border-radius: 16px;
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
+  padding: 12px 10px 10px;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  align-items: start;
+  justify-items: center;
+  text-align: center;
   min-height: 0;
   box-shadow: var(--shadow);
 }
 
 .box h3 {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: 1.15rem;
   font-weight: 700;
+  line-height: 1.15;
 }
 
 .box .kid {
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 0.72rem;
-  line-height: 1.25;
-  flex: 1;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  max-width: 95%;
 }
 
 .box .value {
-  margin: 8px 0 0;
+  margin: 0;
+  align-self: center;
+  justify-self: center;
   font-family: var(--font-display);
-  font-size: 1.85rem;
+  font-size: clamp(2.4rem, 6.5vh, 3.6rem);
   line-height: 1;
   font-weight: 400;
+  text-align: center;
 }
 
 .box .unit {
-  margin-left: 0.15em;
-  font-size: 0.55em;
+  margin-left: 0.12em;
+  font-size: 0.45em;
   color: var(--warm);
 }
 
@@ -321,7 +351,8 @@ button:disabled {
 .live-radar {
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 8px;
+  overflow: hidden;
 }
 
 .panel-head {
@@ -357,7 +388,7 @@ button:disabled {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 280px;
+  min-height: 0;
 }
 
 .historic-view {
@@ -491,12 +522,17 @@ dialog::backdrop {
     grid-template-columns: 1fr;
   }
 
-  .boxes {
-    grid-template-columns: repeat(2, 1fr);
+  .live-left {
+    --tile: min(46vw, 280px);
+    width: 100%;
+    grid-template-columns: var(--tile) var(--tile);
+    grid-template-rows: var(--tile);
+    justify-content: center;
   }
 
-  .radar-frame iframe {
-    min-height: 200px;
+  .boxes {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(120px, auto);
   }
 
   .stats {
