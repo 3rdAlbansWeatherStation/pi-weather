@@ -58,6 +58,9 @@ function buildSeries(days, pointsPerDay = 24) {
     const hour = t.getHours();
     const n = seededNoise(i + days * 17);
     const tempC = Number((9 + 7 * Math.sin(((hour - 6) / 24) * Math.PI * 2) + (n - 0.5) * 3).toFixed(1));
+    // Bias mock wind toward SW/W for a readable rose (typical UK weather feel)
+    const dirNoise = seededNoise(i + days * 31);
+    const windDirDeg = Math.round((220 + (dirNoise - 0.5) * 140 + seededNoise(i * 3) * 40) % 360);
     points.push({
       t: t.toISOString(),
       tempC,
@@ -65,6 +68,7 @@ function buildSeries(days, pointsPerDay = 24) {
       pressureHpa: Number((1010 + (n - 0.5) * 14).toFixed(1)),
       rainMm: Number((n > 0.78 ? n * 1.8 : 0).toFixed(1)),
       windMs: Number((0.8 + n * 4.5).toFixed(1)),
+      windDirDeg,
     });
   }
   return points;

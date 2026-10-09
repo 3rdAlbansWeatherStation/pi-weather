@@ -108,39 +108,74 @@
     </main>
 
     <main id="view-historic" class="view historic-view" hidden>
-      <section class="panel history" aria-labelledby="history-title">
-        <div class="panel-head">
-          <h2 id="history-title">History</h2>
-          <div class="segmented" role="tablist" aria-label="History range">
-            <button type="button" class="seg active" data-range="week">Week</button>
-            <button type="button" class="seg" data-range="month">Month</button>
-          </div>
+      <div class="history-top">
+        <div>
+          <h2 id="history-title">Historic</h2>
+          <p class="history-note">Mock data for now — real station history later</p>
         </div>
-        <div class="stats" id="history-stats">
-          <div class="stat">
-            <span class="label">High</span>
-            <strong id="h-high">—</strong>
-            <span class="kid-inline">Hottest</span>
-          </div>
-          <div class="stat">
-            <span class="label">Low</span>
-            <strong id="h-low">—</strong>
-            <span class="kid-inline">Coldest</span>
-          </div>
-          <div class="stat">
-            <span class="label">Average</span>
-            <strong id="h-avg">—</strong>
-            <span class="kid-inline">Typical</span>
-          </div>
-          <div class="stat">
-            <span class="label">Rain</span>
-            <strong id="h-rain">—</strong>
-            <span class="kid-inline">Total rain</span>
-          </div>
+        <div class="segmented" role="tablist" aria-label="History range">
+          <button type="button" class="seg active" data-range="week">Week</button>
+          <button type="button" class="seg" data-range="month">Month</button>
         </div>
-        <canvas id="chart" width="900" height="220" aria-label="Temperature history chart"></canvas>
-        <p class="history-note">Mock history for now — real highs, lows and averages when the station is connected.</p>
-      </section>
+      </div>
+
+      <div class="history-layout">
+        <section class="panel rose-panel" aria-label="Wind rose">
+          <div class="panel-head">
+            <h2 id="rose-title">Wind rose</h2>
+            <span class="radar-credit" id="rose-blurb">Which way the wind came from</span>
+          </div>
+          <canvas id="wind-rose" width="320" height="320" aria-label="Wind direction rose"></canvas>
+          <div class="stats rose-stats">
+            <div class="stat">
+              <span class="label">Avg wind</span>
+              <strong id="h-wind-avg">—</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Strongest</span>
+              <strong id="h-wind-high">—</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="history-charts" aria-label="History charts">
+          <article class="panel chart-card">
+            <div class="panel-head">
+              <h2>Temperature</h2>
+              <span class="chart-summary" id="sum-temp">—</span>
+            </div>
+            <canvas id="chart-temp" class="line-chart" width="640" height="120"></canvas>
+          </article>
+          <article class="panel chart-card">
+            <div class="panel-head">
+              <h2>Humidity</h2>
+              <span class="chart-summary" id="sum-humidity">—</span>
+            </div>
+            <canvas id="chart-humidity" class="line-chart" width="640" height="120"></canvas>
+          </article>
+          <article class="panel chart-card">
+            <div class="panel-head">
+              <h2>Pressure</h2>
+              <span class="chart-summary" id="sum-pressure">—</span>
+            </div>
+            <canvas id="chart-pressure" class="line-chart" width="640" height="120"></canvas>
+          </article>
+          <article class="panel chart-card">
+            <div class="panel-head">
+              <h2>Rain</h2>
+              <span class="chart-summary" id="sum-rain">—</span>
+            </div>
+            <canvas id="chart-rain" class="line-chart" width="640" height="120"></canvas>
+          </article>
+          <article class="panel chart-card">
+            <div class="panel-head">
+              <h2>Wind speed</h2>
+              <span class="chart-summary" id="sum-wind">—</span>
+            </div>
+            <canvas id="chart-wind" class="line-chart" width="640" height="120"></canvas>
+          </article>
+        </section>
+      </div>
     </main>
 
     <button type="button" class="danger power-fab" id="btn-power">Power</button>
