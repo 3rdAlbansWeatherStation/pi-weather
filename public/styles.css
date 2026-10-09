@@ -1,17 +1,26 @@
 :root {
-  --ink: #e8eef5;
-  --muted: #9fb0c3;
-  --line: rgba(232, 238, 245, 0.14);
-  --panel: rgba(10, 22, 36, 0.55);
-  --box: rgba(8, 18, 30, 0.72);
-  --accent: #7ec8e3;
-  --warm: #f0c27b;
-  --danger: #ff8b7a;
-  --danger-bg: rgba(120, 36, 28, 0.85);
-  --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  /* Scouts brand palette (Aug 2026 guidelines) */
+  --scout-purple: #7413dc;
+  --scout-teal: #088486;
+  --scout-navy: #003982;
+  --scout-blue: #006ddf;
+  --scout-green: #25b755;
+  --scout-yellow: #ffe627;
+  --scout-orange: #ff912a;
+  --scout-red: #ed3f23;
+  --ink: #ffffff;
+  --muted: #c8d6ef;
+  --line: rgba(255, 255, 255, 0.18);
+  --panel: rgba(0, 40, 90, 0.72);
+  --box: rgba(0, 32, 75, 0.82);
+  --accent: var(--scout-purple);
+  --warm: var(--scout-yellow);
+  --danger: #ffd4cc;
+  --danger-bg: rgba(237, 63, 35, 0.92);
+  --shadow: 0 18px 40px rgba(0, 24, 60, 0.35);
   --radius: 18px;
-  --font-ui: "Figtree", system-ui, sans-serif;
-  --font-display: "Instrument Serif", Georgia, serif;
+  --font-ui: "Nunito Sans", system-ui, sans-serif;
+  --font-display: "Nunito Sans", system-ui, sans-serif;
 }
 
 * {
@@ -24,7 +33,7 @@ body {
   min-height: 100%;
   color: var(--ink);
   font-family: var(--font-ui);
-  background: #071018;
+  background: var(--scout-navy);
   overflow: hidden;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -36,7 +45,7 @@ body {
   padding: 12px 16px 56px;
   display: grid;
   grid-template-rows: auto 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 .sky {
@@ -44,9 +53,9 @@ body {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse 80% 55% at 15% 10%, rgba(126, 200, 227, 0.28), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 90% 0%, rgba(240, 194, 123, 0.16), transparent 50%),
-    linear-gradient(165deg, #12304a 0%, #0a1a28 42%, #071018 100%);
+    radial-gradient(ellipse 70% 50% at 12% 8%, rgba(116, 19, 220, 0.35), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 92% 0%, rgba(8, 132, 134, 0.28), transparent 50%),
+    linear-gradient(165deg, #0047a0 0%, var(--scout-navy) 45%, #002456 100%);
 }
 
 .top,
@@ -68,16 +77,43 @@ body {
   gap: 12px;
 }
 
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
+}
+
+.scout-logo {
+  height: 72px;
+  width: auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+.brand-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 14px;
+  min-width: 0;
+}
+
 .brand {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.45rem;
+  font-size: clamp(1.55rem, 3.2vw, 2.15rem);
+  line-height: 1.1;
+  font-weight: 900;
 }
 
 .meta {
-  margin: 2px 0 0;
+  margin: 0;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .view-toggle {
@@ -101,8 +137,8 @@ body {
 }
 
 .view-btn.active {
-  background: rgba(126, 200, 227, 0.22);
-  color: var(--ink);
+  background: var(--scout-purple);
+  color: #ffffff;
 }
 
 button {
@@ -127,8 +163,8 @@ button.ghost {
 
 button.danger {
   background: var(--danger-bg);
-  border-color: rgba(255, 139, 122, 0.45);
-  color: #ffe8e3;
+  border-color: rgba(237, 63, 35, 0.65);
+  color: #ffffff;
 }
 
 button:disabled {
@@ -193,9 +229,9 @@ button:disabled {
   max-height: calc(100% - 2rem);
   border-radius: 50%;
   background:
-    radial-gradient(circle at center, rgba(126, 200, 227, 0.12), transparent 55%),
-    rgba(0, 0, 0, 0.25);
-  border: 2px solid rgba(126, 200, 227, 0.35);
+    radial-gradient(circle at center, rgba(116, 19, 220, 0.22), transparent 55%),
+    rgba(0, 24, 60, 0.35);
+  border: 2px solid rgba(255, 230, 39, 0.45);
 }
 
 .compass-ring {
@@ -215,7 +251,7 @@ button:disabled {
   color: var(--muted);
 }
 
-.compass-n { top: 8px; left: 50%; transform: translateX(-50%); color: var(--accent); }
+.compass-n { top: 8px; left: 50%; transform: translateX(-50%); color: var(--scout-yellow); }
 .compass-s { bottom: 8px; left: 50%; transform: translateX(-50%); }
 .compass-e { right: 10px; top: 50%; transform: translateY(-50%); }
 .compass-w { left: 10px; top: 50%; transform: translateY(-50%); }
@@ -230,7 +266,7 @@ button:disabled {
   margin-top: -38%;
   transform-origin: bottom center;
   transform: rotate(0deg);
-  background: linear-gradient(to top, transparent 0%, var(--warm) 35%, #fff4d6 100%);
+  background: linear-gradient(to top, transparent 0%, var(--scout-orange) 35%, var(--scout-yellow) 100%);
   border-radius: 4px;
   transition: transform 0.6s ease;
   z-index: 1;
@@ -244,7 +280,7 @@ button:disabled {
   transform: translateX(-50%);
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 10px solid #fff4d6;
+  border-bottom: 10px solid var(--scout-yellow);
 }
 
 .compass-center {
@@ -262,7 +298,7 @@ button:disabled {
   font-family: var(--font-display);
   font-size: clamp(2.2rem, 5vh, 3.2rem);
   line-height: 1;
-  font-weight: 400;
+  font-weight: 900;
 }
 
 .compass-center span {
@@ -275,8 +311,8 @@ button:disabled {
   margin-top: 4px;
   font-style: normal;
   font-size: 0.78rem;
-  color: var(--accent);
-  font-weight: 600;
+  color: var(--scout-yellow);
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -316,7 +352,7 @@ button:disabled {
 .box h3 {
   margin: 0;
   font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.15;
 }
 
@@ -335,14 +371,15 @@ button:disabled {
   font-family: var(--font-display);
   font-size: clamp(2.4rem, 6.5vh, 3.6rem);
   line-height: 1;
-  font-weight: 400;
+  font-weight: 900;
   text-align: center;
 }
 
 .box .unit {
   margin-left: 0.12em;
   font-size: 0.45em;
-  color: var(--warm);
+  color: var(--scout-yellow);
+  font-weight: 800;
 }
 
 .panel {
@@ -415,7 +452,7 @@ button:disabled {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.5rem;
-  font-weight: 400;
+  font-weight: 900;
 }
 
 .history-layout {
@@ -504,8 +541,8 @@ button:disabled {
 }
 
 .seg.active {
-  background: rgba(126, 200, 227, 0.2);
-  color: var(--ink);
+  background: var(--scout-purple);
+  color: #ffffff;
 }
 
 .stats {
@@ -557,7 +594,7 @@ dialog {
   border: 1px solid var(--line);
   border-radius: 20px;
   padding: 0;
-  background: #102032;
+  background: var(--scout-navy);
   color: var(--ink);
   box-shadow: var(--shadow);
   width: min(420px, calc(100vw - 32px));
@@ -575,7 +612,7 @@ dialog::backdrop {
   margin: 0 0 8px;
   font-family: var(--font-display);
   font-size: 1.8rem;
-  font-weight: 400;
+  font-weight: 900;
 }
 
 .power-card p {

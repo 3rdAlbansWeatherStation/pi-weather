@@ -7,17 +7,17 @@ let lastHistory = null;
 const $ = (id) => document.getElementById(id);
 
 const CHARTS = [
-  { id: "chart-temp", key: "tempC", color: "#7ec8e3", fill: "rgba(126,200,227,0.18)", summaryId: "sum-temp", unit: "°C" },
-  { id: "chart-humidity", key: "humidity", color: "#9ad0c2", fill: "rgba(154,208,194,0.18)", summaryId: "sum-humidity", unit: "%" },
-  { id: "chart-pressure", key: "pressureHpa", color: "#f0c27b", fill: "rgba(240,194,123,0.16)", summaryId: "sum-pressure", unit: "hPa" },
-  { id: "chart-rain", key: "rainMm", color: "#8bb8e8", fill: "rgba(139,184,232,0.2)", summaryId: "sum-rain", unit: "mm" },
-  { id: "chart-wind", key: "windMs", color: "#d4b483", fill: "rgba(212,180,131,0.16)", summaryId: "sum-wind", unit: "m/s" },
+  { id: "chart-temp", key: "tempC", color: "#7413dc", fill: "rgba(116,19,220,0.18)", summaryId: "sum-temp", unit: "°C" },
+  { id: "chart-humidity", key: "humidity", color: "#088486", fill: "rgba(8,132,134,0.2)", summaryId: "sum-humidity", unit: "%" },
+  { id: "chart-pressure", key: "pressureHpa", color: "#006ddf", fill: "rgba(0,109,223,0.18)", summaryId: "sum-pressure", unit: "hPa" },
+  { id: "chart-rain", key: "rainMm", color: "#25b755", fill: "rgba(37,183,85,0.18)", summaryId: "sum-rain", unit: "mm" },
+  { id: "chart-wind", key: "windMs", color: "#ff912a", fill: "rgba(255,145,42,0.18)", summaryId: "sum-wind", unit: "m/s" },
 ];
 
-function fmtTime(iso) {
+function fmtDayTime(iso) {
   try {
     return new Date(iso).toLocaleString(undefined, {
-      weekday: "short",
+      weekday: "long",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -89,7 +89,7 @@ function renderCurrent(data) {
       ? "Which way the wind is blowing, and how fast"
       : `Wind from the ${windDir(deg)} · ${speed == null ? "—" : Number(speed).toFixed(1)} m/s`;
 
-  $("updated").textContent = `Updated ${fmtTime(data.updatedAt)} · ${data.station || "station"} · ${data.source || "mock"}`;
+  $("updated").textContent = fmtDayTime(data.updatedAt);
 }
 
 function prepareCanvas(canvas) {
@@ -203,8 +203,8 @@ function drawWindRose(points) {
     ctx.lineTo(cx + Math.cos(ang) * radius, cy + Math.sin(ang) * radius);
     ctx.strokeStyle = "rgba(232,238,245,0.12)";
     ctx.stroke();
-    ctx.fillStyle = i === 0 ? "#7ec8e3" : "#9fb0c3";
-    ctx.font = "600 12px Figtree, sans-serif";
+    ctx.fillStyle = i === 0 ? "#ffe627" : "#c8d6ef";
+    ctx.font = "700 12px 'Nunito Sans', sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(
@@ -224,18 +224,18 @@ function drawWindRose(points) {
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, len, ang - half, ang + half);
     ctx.closePath();
-    ctx.fillStyle = "rgba(240, 194, 123, 0.55)";
+    ctx.fillStyle = "rgba(116, 19, 220, 0.55)";
     ctx.fill();
-    ctx.strokeStyle = "rgba(240, 194, 123, 0.95)";
+    ctx.strokeStyle = "rgba(255, 230, 39, 0.95)";
     ctx.lineWidth = 2;
     ctx.stroke();
   });
 
   ctx.beginPath();
   ctx.arc(cx, cy, 10, 0, Math.PI * 2);
-  ctx.fillStyle = "#102032";
+  ctx.fillStyle = "#003982";
   ctx.fill();
-  ctx.strokeStyle = "rgba(126,200,227,0.5)";
+  ctx.strokeStyle = "rgba(8,132,134,0.8)";
   ctx.stroke();
 }
 
@@ -270,7 +270,7 @@ async function refresh() {
     renderHistory(history);
   } catch (err) {
     console.error(err);
-    $("updated").textContent = "Unable to load weather data";
+    $("updated").textContent = "—";
   }
 }
 
