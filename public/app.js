@@ -40,8 +40,12 @@ async function getJson(url) {
 
 function setView(view) {
   currentView = view;
-  $("view-live").hidden = view !== "live";
-  $("view-historic").hidden = view !== "historic";
+  const live = $("view-live");
+  const historic = $("view-historic");
+  live.hidden = view !== "live";
+  historic.hidden = view !== "historic";
+  live.style.display = view === "live" ? "" : "none";
+  historic.style.display = view === "historic" ? "" : "none";
   document.querySelectorAll(".view-btn").forEach((btn) => {
     const active = btn.dataset.view === view;
     btn.classList.toggle("active", active);

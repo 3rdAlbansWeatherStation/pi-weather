@@ -55,6 +55,12 @@ body {
   z-index: 1;
 }
 
+/* Class display:grid must not override the HTML hidden attribute */
+.view[hidden],
+[hidden] {
+  display: none !important;
+}
+
 .top {
   display: flex;
   align-items: center;
