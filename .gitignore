@@ -12,7 +12,7 @@ Thumbs.db
 .idea/
 .cursor/
 
-# Credentials / security — NEVER push to GitHub
+# Local credentials / private files
 *Scout Hut Weather Station*
 *Scout*Hut*Weather*Station*
 *.docx
@@ -21,7 +21,6 @@ credentials*
 **/passwords*
 docs/pi-connect.local.md
 **/*.local.md
-# Never put keys in the public Pages tree (use GitHub Actions secrets later)
 site/**/.env*
 site/**/*secret*
 site/**/*credential*

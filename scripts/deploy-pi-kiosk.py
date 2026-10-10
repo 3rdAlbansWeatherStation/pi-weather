@@ -1,11 +1,8 @@
 """
-Deploy the PI KIOSK (public/ + server/) to the Raspberry Pi.
+Deploy the Pi kiosk (public/ + server/) to the Raspberry Pi.
 
-This does NOT touch site/ or github.io — that is a different website.
-See docs/pi-connect.md and .cursor/rules/two-sites-pi-and-github.mdc.
-
-Password is read from gitignored docs/pi-connect.local.md.
-Cloud keys / hub IP are synced from local gitignored .env (names only logged).
+Does not touch site/ or github.io.
+Reads SSH details from docs/pi-connect.local.md and env from .env (both gitignored).
 """
 import re
 import sys
