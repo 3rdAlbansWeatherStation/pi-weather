@@ -178,8 +178,10 @@ function prepareCanvas(canvas) {
 }
 
 function seriesRange(values) {
-  let min = Math.min(...values);
-  let max = Math.max(...values);
+  const finite = values.filter((v) => v != null && Number.isFinite(v));
+  if (!finite.length) return { min: 0, max: 1, span: 1 };
+  let min = Math.min(...finite);
+  let max = Math.max(...finite);
   if (min === max) {
     min -= 1;
     max += 1;
@@ -187,9 +189,23 @@ function seriesRange(values) {
   return { min, max, span: max - min };
 }
 
+/** Prefer real numbers; carry forward last good value so gaps don't plot as 0. */
+function seriesValues(points, key) {
+  let last = null;
+  return points.map((p) => {
+    const raw = p?.[key];
+    if (raw == null || raw === "") return last;
+    const n = Number(raw);
+    if (!Number.isFinite(n)) return last;
+    last = n;
+    return n;
+  });
+}
+
 function seriesCoords(values, cssW, cssH, padX, padY) {
   const { min, span } = seriesRange(values);
   return values.map((v, i) => {
+    if (v == null || !Number.isFinite(v)) return null;
     const x = padX + (i / Math.max(values.length - 1, 1)) * (cssW - padX * 2);
     const y = padY + (1 - (v - min) / span) * (cssH - padY * 2);
     return { x, y };
@@ -209,21 +225,22 @@ function drawGrid(ctx, cssW, cssH, padX, padY) {
 }
 
 function strokeSeries(ctx, coords, color, fill, cssH, padY) {
-  if (!coords.length) return;
+  const pts = coords.filter(Boolean);
+  if (!pts.length) return;
   if (fill) {
     ctx.beginPath();
-    coords.forEach((c, i) => {
+    pts.forEach((c, i) => {
       if (i === 0) ctx.moveTo(c.x, c.y);
       else ctx.lineTo(c.x, c.y);
     });
-    ctx.lineTo(coords[coords.length - 1].x, cssH - padY);
-    ctx.lineTo(coords[0].x, cssH - padY);
+    ctx.lineTo(pts[pts.length - 1].x, cssH - padY);
+    ctx.lineTo(pts[0].x, cssH - padY);
     ctx.closePath();
     ctx.fillStyle = fill;
     ctx.fill();
   }
   ctx.beginPath();
-  coords.forEach((c, i) => {
+  pts.forEach((c, i) => {
     if (i === 0) ctx.moveTo(c.x, c.y);
     else ctx.lineTo(c.x, c.y);
   });
@@ -243,8 +260,8 @@ function drawDualChart(canvasId, points, leftKey, rightKey, leftStyle, rightStyl
   const padX = 6;
   const padY = 10;
   drawGrid(ctx, cssW, cssH, padX, padY);
-  const leftVals = points.map((p) => Number(p[leftKey]) || 0);
-  const rightVals = points.map((p) => Number(p[rightKey]) || 0);
+  const leftVals = seriesValues(points, leftKey);
+  const rightVals = seriesValues(points, rightKey);
   strokeSeries(
     ctx,
     seriesCoords(leftVals, cssW, cssH, padX, padY),
@@ -272,7 +289,7 @@ function drawRainChart(points) {
   const padX = 6;
   const padY = 10;
   drawGrid(ctx, cssW, cssH, padX, padY);
-  const values = points.map((p) => Number(p.rainMm) || 0);
+  const values = seriesValues(points, "rainMm").map((v) => v ?? 0);
   strokeSeries(
     ctx,
     seriesCoords(values, cssW, cssH, padX, padY),

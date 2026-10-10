@@ -136,15 +136,13 @@ function normalizeCloudHistory(data, normalized) {
   const pressList = listMap(pressure.relative);
   const rainList = listMap(rainfall.rain_rate);
 
-  const stamps = new Set([
-    ...Object.keys(tempList),
-    ...Object.keys(humList),
-    ...Object.keys(windList),
-    ...Object.keys(pressList),
-    ...Object.keys(rainList),
-  ]);
+  // Use outdoor temperature timestamps as the master timeline so a newer
+  // wind/pressure-only sample cannot create a fake humidity/temp of 0 on charts.
+  const stamps = Object.keys(tempList).length
+    ? Object.keys(tempList)
+    : Object.keys(humList);
 
-  const points = [...stamps]
+  const points = stamps
     .map((ts) => Number(ts))
     .filter((ts) => Number.isFinite(ts))
     .sort((a, b) => a - b)
@@ -159,7 +157,8 @@ function normalizeCloudHistory(data, normalized) {
         windMs: num(windList[key]),
         windDirDeg: num(dirList[key]),
       };
-    });
+    })
+    .filter((p) => p.tempC != null || p.humidity != null);
 
   const sampled = downsample(points);
   return {
