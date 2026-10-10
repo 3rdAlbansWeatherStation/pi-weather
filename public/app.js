@@ -177,7 +177,10 @@ function prepareCanvas(canvas) {
   return { ctx, cssW, cssH };
 }
 
-function seriesRange(values) {
+function seriesRange(values, fixed) {
+  if (fixed && Number.isFinite(fixed.min) && Number.isFinite(fixed.max)) {
+    return { min: fixed.min, max: fixed.max, span: fixed.max - fixed.min || 1 };
+  }
   const finite = values.filter((v) => v != null && Number.isFinite(v));
   if (!finite.length) return { min: 0, max: 1, span: 1 };
   let min = Math.min(...finite);

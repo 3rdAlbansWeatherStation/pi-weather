@@ -9,34 +9,35 @@ Same Scouts look when we choose to match it; **no Power controls**. Never deploy
 
 - Loads only `./data/*.json` (weather readings for display).
 - **Never** put Ecowitt API keys, hub passwords, Wi‑Fi keys, or the Scout Hut credentials document in this folder.
-- Until cloud is wired, files are **mock / demo** (`source: "mock"`). Regenerate with:
+- Live data: GitHub Action on **`3rdAlbansWeatherStation.github.io`** runs `.github/scripts/fetch-ecowitt-data.js` every **15 minutes** (and on manual dispatch), using repository **Actions secrets**:
+  - `ECOWITT_APPLICATION_KEY`
+  - `ECOWITT_API_KEY`
+  - `ECOWITT_DEVICE_MAC`
+- Keys stay in GitHub Secrets only — not in this folder or committed JSON.
 
-```bash
-node scripts/export-site-mock.js
+Local regenerate (uses your gitignored `.env` — Windows PowerShell):
+
+```powershell
+Get-Content .env | ForEach-Object { if ($_ -match '^\s*#' -or $_ -notmatch '=') { return }; $p=$_.Split('=',2); Set-Item "env:$($p[0].Trim())" $p[1].Trim() }
+$env:SITE_DATA_DIR = "$PWD\site\data"
+node site/.github/scripts/fetch-ecowitt-data.js
 ```
 
-Later: a GitHub Action can overwrite `data/*.json` using **repository secrets** (keys stay in GitHub Secrets, not in the repo).
+Publish this folder to Pages: `python scripts/publish-github-site.py`
+
+Demo mock (no keys): `node scripts/export-site-mock.js`
 
 ## Preview locally
-
-From the repo root (any static server):
 
 ```bash
 npx --yes serve site
 ```
 
-Open the URL it prints (usually `http://localhost:3000`).
+## Live URL
 
-## Live URL (root, no `/pi-weather/`)
-
-GitHub only serves `https://3rdalbansweatherstation.github.io/` from a repo named
-**`3rdAlbansWeatherStation.github.io`** (user/org site). The Pi app stays in `pi-weather`;
-this `site/` folder is the source copy, published to that Pages repo at the **root**.
-
-No secrets are required for the mock site. Never put API keys in either repo.
+Published from repo **`3rdAlbansWeatherStation.github.io`** (user/org Pages at the root).  
+This `site/` folder is the source copy in `pi-weather`; publish copies it to that Pages repo (including `.github/` for the weather Action).
 
 ## Cache busting
 
-GitHub Pages caches CSS/JS aggressively. After style or script changes, bump the
-`?v=` query on the links in `index.html` (e.g. `styles.css?v=5`) so browsers
-fetch the new files instead of an old cached copy.
+After style or script changes, bump the `?v=` query on the links in `index.html`.
