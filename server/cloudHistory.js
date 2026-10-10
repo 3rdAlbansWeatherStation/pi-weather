@@ -90,9 +90,12 @@ function summarize(points) {
   const temps = points.map((p) => p.tempC).filter((n) => n != null);
   const hum = points.map((p) => p.humidity).filter((n) => n != null);
   const wind = points.map((p) => p.windMs).filter((n) => n != null);
+  const gust = points.map((p) => p.gustMs).filter((n) => n != null);
   const rain = points.map((p) => p.rainMm).filter((n) => n != null);
+  const solar = points.map((p) => p.wm2).filter((n) => n != null);
   const avg = (arr) =>
     arr.length ? Number((arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1)) : null;
+  const peak = [...wind, ...gust];
   return {
     // Basic series stats for chart labels — TODO(max-min): proper daily extremes later
     temp: {
@@ -106,8 +109,9 @@ function summarize(points) {
       avg: hum.length ? Math.round(avg(hum)) : null,
     },
     rainTotalMm: rain.length ? Number(Math.max(...rain).toFixed(1)) : null,
+    solarHighWm2: solar.length ? Math.max(...solar) : null,
     wind: {
-      high: wind.length ? Math.max(...wind) : null,
+      high: peak.length ? Math.max(...peak) : null,
       avg: avg(wind),
     },
   };
@@ -128,13 +132,16 @@ function normalizeCloudHistory(data, normalized) {
   const wind = data.wind || {};
   const pressure = data.pressure || {};
   const rainfall = data.rainfall || {};
+  const solar = data.solar_and_uvi || {};
 
   const tempList = listMap(outdoor.temperature);
   const humList = listMap(outdoor.humidity);
   const windList = listMap(wind.wind_speed);
+  const gustList = listMap(wind.wind_gust);
   const dirList = listMap(wind.wind_direction);
   const pressList = listMap(pressure.relative);
   const rainList = listMap(rainfall.rain_rate);
+  const solarList = listMap(solar.solar);
 
   // Use outdoor temperature timestamps as the master timeline so a newer
   // wind/pressure-only sample cannot create a fake humidity/temp of 0 on charts.
@@ -155,7 +162,9 @@ function normalizeCloudHistory(data, normalized) {
         pressureHpa: num(pressList[key]),
         rainMm: num(rainList[key]),
         windMs: num(windList[key]),
+        gustMs: num(gustList[key]),
         windDirDeg: num(dirList[key]),
+        wm2: num(solarList[key]),
       };
     })
     .filter((p) => p.tempC != null || p.humidity != null);
