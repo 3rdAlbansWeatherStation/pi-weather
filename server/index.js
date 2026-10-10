@@ -1,7 +1,30 @@
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const { getCurrent, getHistory } = require("./weather");
 const { canControlPower, shutdown, reboot } = require("./power");
+
+function loadEnvFile() {
+  const envPath = path.join(__dirname, "..", ".env");
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = val;
+  }
+}
+
+loadEnvFile();
 
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -13,7 +36,7 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
-    source: process.env.DATA_SOURCE || "mock",
+    source: process.env.DATA_SOURCE || "hub",
     powerControl: canControlPower(),
   });
 });

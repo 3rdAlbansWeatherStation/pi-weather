@@ -1,10 +1,15 @@
-const REFRESH_MS = 30_000;
+const LIVE_REFRESH_MS = 30_000;
+const HISTORY_REFRESH_MS = 15 * 60_000;
+/** Below this, vane chatter is ignored so the needle doesn't spin in calm air. */
+const WIND_CALM_MS = 0.5; // ~1.1 mph
 let historyRange = "week";
 let currentView = "live";
 let livePage = "1";
-let refreshTimer;
-let clockTimer;
+let liveTimer;
+let historyTimer;
 let lastHistory = null;
+let lastSteadyWindDeg = 0;
+let historyFetchInFlight = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -19,23 +24,16 @@ const BAND = {
   blueFill: "rgba(0,109,223,0.2)",
 };
 
-function fmtLiveClock(date = new Date()) {
+function fmtUpdatedAt(iso) {
+  if (!iso) return "—";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
   return date.toLocaleString(undefined, {
-    weekday: "long",
+    weekday: "short",
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
   });
-}
-
-function tickClock() {
-  $("updated").textContent = fmtLiveClock();
-}
-
-function startClock() {
-  clearInterval(clockTimer);
-  tickClock();
-  clockTimer = setInterval(tickClock, 1000);
 }
 
 function windDir(deg) {
@@ -53,6 +51,11 @@ function msToMph(ms) {
 function fmtMph(ms, digits = 1) {
   const mph = msToMph(ms);
   return mph == null ? "--" : mph.toFixed(digits);
+}
+
+function fmtNum(n, digits = 1) {
+  if (n == null || Number.isNaN(Number(n))) return "--";
+  return Number(n).toFixed(digits);
 }
 
 async function getJson(url) {
@@ -100,7 +103,7 @@ function setView(view) {
   if (view === "historic") {
     requestAnimationFrame(() => {
       if (lastHistory) renderHistory(lastHistory);
-      else refresh();
+      else refreshHistory(true);
     });
   }
 }
@@ -108,6 +111,8 @@ function setView(view) {
 function renderCurrent(data) {
   const deg = data.wind?.directionDeg;
   const speed = data.wind?.speedMs;
+
+  $("updated").textContent = fmtUpdatedAt(data.updatedAt);
 
   $("temp").textContent =
     data.outdoor?.tempC == null ? "--" : Number(data.outdoor.tempC).toFixed(1);
@@ -130,27 +135,33 @@ function renderCurrent(data) {
   $("rain-rate").textContent =
     data.rain?.rateMm == null ? "--" : Number(data.rain.rateMm).toFixed(1);
   $("solar").textContent =
-    data.solar?.lightKlux == null ? "--" : String(data.solar.lightKlux);
+    data.solar?.wm2 == null ? "--" : Number(data.solar.wm2).toFixed(0);
   $("rain-hour").textContent =
     data.rain?.hourMm == null ? "--" : Number(data.rain.hourMm).toFixed(1);
   $("rain-week").textContent =
     data.rain?.weekMm == null ? "--" : Number(data.rain.weekMm).toFixed(1);
   $("wind-day-max").textContent = fmtMph(data.wind?.dayMaxMs);
-  $("sensor-battery").textContent = data.sensor?.battery || "--";
-  $("sensor-signal").textContent = data.sensor?.signal || "--";
+  $("sensor-status").textContent = data.sensor?.status || "--";
   $("condition-box").textContent = data.condition || "--";
 
   $("wind-speed").textContent = fmtMph(speed);
 
   const needle = $("wind-needle");
   const speedN = Number(speed) || 0;
+  const degN = Number(deg);
+  // In calm air the vane still frets; keep the last steady heading.
+  if (speedN >= WIND_CALM_MS && Number.isFinite(degN)) {
+    lastSteadyWindDeg = degN;
+  }
+  const needleDeg = Number.isFinite(degN) && speedN >= WIND_CALM_MS ? degN : lastSteadyWindDeg;
   // Grow with wind; soft cap around 12 m/s (~27 mph) so the UI stays readable
   const strength = Math.min(Math.max(speedN / 12, 0), 1);
   const needleH = 30 + strength * 16; // 30% → 46%
   const tipScale = 1 + strength * 0.75; // 1 → 1.75
   needle.style.setProperty("--needle-h", `${needleH.toFixed(1)}%`);
   needle.style.setProperty("--tip-scale", tipScale.toFixed(2));
-  needle.style.transform = `rotate(${Number(deg) || 0}deg)`;
+  needle.style.transform = `rotate(${needleDeg}deg)`;
+  needle.classList.toggle("is-calm", speedN < WIND_CALM_MS);
 }
 
 function prepareCanvas(canvas) {
@@ -349,34 +360,66 @@ function drawWindRose(points) {
   ctx.stroke();
 }
 
+function setHistoryOffline(offline) {
+  const banner = $("history-offline");
+  const view = $("view-historic");
+  if (banner) banner.hidden = !offline;
+  if (view) view.classList.toggle("is-offline", Boolean(offline));
+}
+
 function renderHistory(data) {
   lastHistory = data;
-  const s = data.summary;
+  const offline = Boolean(data?.offline);
+  setHistoryOffline(offline);
 
-  $("h-wind-avg").textContent = fmtMph(s.wind.avg);
-  $("h-wind-high").textContent = fmtMph(s.wind.high);
+  const s = data.summary || {};
+  const points = Array.isArray(data.points) ? data.points : [];
+  const hasPoints = points.length > 0;
 
-  const pressures = data.points.map((p) => Number(p.pressureHpa) || 0);
-  const pressHigh = Math.max(...pressures);
-  const pressLow = Math.min(...pressures);
-  const winds = data.points.map((p) => Number(p.windMs) || 0);
-  const windLow = Math.min(...winds);
+  $("h-wind-avg").textContent = fmtMph(s.wind?.avg);
+  $("h-wind-high").textContent = fmtMph(s.wind?.high);
 
-  $("lbl-temp-high").textContent = s.temp.high.toFixed(1);
-  $("lbl-temp-low").textContent = s.temp.low.toFixed(1);
-  $("lbl-hum-high").textContent = String(s.humidity.high);
-  $("lbl-hum-low").textContent = String(s.humidity.low);
-  $("lbl-wind-high").textContent = fmtMph(s.wind.high);
+  const pressures = points.map((p) => Number(p.pressureHpa)).filter((n) => !Number.isNaN(n));
+  const winds = points.map((p) => Number(p.windMs)).filter((n) => !Number.isNaN(n));
+  const pressHigh = pressures.length ? Math.max(...pressures) : null;
+  const pressLow = pressures.length ? Math.min(...pressures) : null;
+  const windLow = winds.length ? Math.min(...winds) : null;
+
+  $("lbl-temp-high").textContent = fmtNum(s.temp?.high);
+  $("lbl-temp-low").textContent = fmtNum(s.temp?.low);
+  $("lbl-hum-high").textContent =
+    s.humidity?.high == null ? "--" : String(s.humidity.high);
+  $("lbl-hum-low").textContent =
+    s.humidity?.low == null ? "--" : String(s.humidity.low);
+  $("lbl-wind-high").textContent = fmtMph(s.wind?.high);
   $("lbl-wind-low").textContent = fmtMph(windLow);
-  $("lbl-press-high").textContent = pressHigh.toFixed(0);
-  $("lbl-press-low").textContent = pressLow.toFixed(0);
-  $("lbl-rain-high").textContent = s.rainTotalMm.toFixed(1);
+  $("lbl-press-high").textContent = fmtNum(pressHigh, 0);
+  $("lbl-press-low").textContent = fmtNum(pressLow, 0);
+  $("lbl-rain-high").textContent = fmtNum(s.rainTotalMm);
 
-  drawWindRose(data.points);
-  drawRainChart(data.points);
+  if (!hasPoints) {
+    ["wind-rose", "chart-rain", "chart-temp-hum", "chart-wind-pressure"].forEach(
+      (id) => {
+        const canvas = $(id);
+        if (!canvas) return;
+        const prepared = prepareCanvas(canvas);
+        if (!prepared) return;
+        const { ctx, cssW, cssH } = prepared;
+        ctx.fillStyle = "rgba(232,238,245,0.45)";
+        ctx.font = "600 14px system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("No history yet", cssW / 2, cssH / 2);
+      }
+    );
+    return;
+  }
+
+  drawWindRose(points);
+  drawRainChart(points);
   drawDualChart(
     "chart-temp-hum",
-    data.points,
+    points,
     "tempC",
     "humidity",
     { color: BAND.yellow, fill: BAND.yellowFill },
@@ -384,7 +427,7 @@ function renderHistory(data) {
   );
   drawDualChart(
     "chart-wind-pressure",
-    data.points,
+    points,
     "windMs",
     "pressureHpa",
     { color: BAND.orange, fill: BAND.orangeFill },
@@ -392,22 +435,45 @@ function renderHistory(data) {
   );
 }
 
-async function refresh() {
+async function refreshLive() {
   try {
-    const [current, history] = await Promise.all([
-      getJson("/api/current"),
-      getJson(`/api/history?range=${historyRange}`),
-    ]);
+    const current = await getJson("/api/current");
     renderCurrent(current);
-    renderHistory(history);
   } catch (err) {
     console.error(err);
   }
 }
 
+async function refreshHistory(force = false) {
+  if (historyFetchInFlight && !force) return historyFetchInFlight;
+  historyFetchInFlight = (async () => {
+    try {
+      const history = await getJson(`/api/history?range=${historyRange}`);
+      renderHistory(history);
+    } catch (err) {
+      console.error(err);
+      renderHistory({
+        offline: true,
+        points: [],
+        summary: {},
+        error: "No Internet - Check the system",
+      });
+    } finally {
+      historyFetchInFlight = null;
+    }
+  })();
+  return historyFetchInFlight;
+}
+
+async function refresh() {
+  await Promise.all([refreshLive(), refreshHistory()]);
+}
+
 function scheduleRefresh() {
-  clearInterval(refreshTimer);
-  refreshTimer = setInterval(refresh, REFRESH_MS);
+  clearInterval(liveTimer);
+  clearInterval(historyTimer);
+  liveTimer = setInterval(refreshLive, LIVE_REFRESH_MS);
+  historyTimer = setInterval(() => refreshHistory(true), HISTORY_REFRESH_MS);
 }
 
 let pendingPowerAction = null;
@@ -480,7 +546,7 @@ function wireUi() {
       btn.classList.add("active");
       btn.setAttribute("aria-selected", "true");
       historyRange = btn.dataset.range;
-      refresh();
+      refreshHistory(true);
     });
   });
 
@@ -499,7 +565,6 @@ function wireUi() {
 }
 
 wireUi();
-startClock();
 setView("live");
 refresh();
 scheduleRefresh();

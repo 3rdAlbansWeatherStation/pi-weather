@@ -166,8 +166,8 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
           </span>
           <h3>Sunlight</h3>
-          <p class="kid">How bright the daylight is</p>
-          <p class="value"><span id="solar">--</span><span class="unit">klux</span></p>
+          <p class="kid">Solar energy from the sun (as the station measures it)</p>
+          <p class="value"><span id="solar">--</span><span class="unit">W/m²</span></p>
         </article>
         <article class="box box-rainhour">
           <span class="box-icon" aria-hidden="true">
@@ -198,11 +198,8 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="22" x2="22" y1="11" y2="13"/><line x1="6" x2="6.01" y1="11" y2="11"/><line x1="10" x2="10.01" y1="11" y2="11"/></svg>
           </span>
           <h3>Sensor</h3>
-          <p class="kid">Battery and signal</p>
-          <div class="value value-stack">
-            <p><span id="sensor-battery">--</span></p>
-            <p class="value-sub"><span id="sensor-signal">--</span></p>
-          </div>
+          <p class="kid">Outdoor sensor health</p>
+          <p class="value value-text" id="sensor-status">--</p>
         </article>
         <article class="box box-condition">
           <span class="box-icon" aria-hidden="true">
@@ -217,7 +214,10 @@
     </main>
 
     <main id="view-historic" class="view historic-view" hidden>
-      <div class="history-layout">
+      <div id="history-offline" class="history-offline" hidden>
+        <p class="history-offline-msg">No Internet - Check the system</p>
+      </div>
+      <div class="history-layout" id="history-layout">
         <section class="panel rose-panel" aria-label="Wind rose">
           <h2 class="rose-title">Wind Rose</h2>
           <div class="rose-canvas-wrap">

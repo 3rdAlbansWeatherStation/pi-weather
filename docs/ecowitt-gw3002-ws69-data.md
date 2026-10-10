@@ -141,7 +141,8 @@ The live hub endpoint is **current + rain totals**, not a full multi-week series
 | **B. GW3000 microSD CSV** | Minute-level on-device archive | Card not in box; parse CSV headers carefully |
 | **C. Ecowitt.net cloud API** `/v3/device/history` | Easy week/month | Needs internet + API keys; coarse retention (fine 5‑min only ~1 day, then coarser) |
 
-**Recommended for 3rd Albans:** **A as primary** (Pi owns history), optional **C** as backup / public site, **B** if you add an SD card later.
+**Current Pi plan:** live = hub; history = **C** (cloud, ~15 min cache). Offline History shows a blur + “No Internet - Check the system”.  
+**TODO(max-min):** richer daily highs/lows later. **TODO(sd):** use hub microSD CSV as backup / later option. Public site will use cloud current + cloud history.
 
 ### Metrics to store each sample (for highs / lows / averages)
 
@@ -227,6 +228,9 @@ Lightning, soil, PM2.5/CO₂, leak, leaf wetness, extra T/H channels, piezo rain
 6. Start SQLite sampler for `/api/history` highs/lows/averages.
 7. Optional: Ecowitt.net keys for public site / cloud backup.
 8. Optional: microSD in GW3000 for Ecowitt’s own CSV archive.
+9. **TODO — Sky card:** better than Fair/Cool/Rain heuristic (pressure trend, rain, solar; not a hub forecast field).
+10. **TODO — max/min:** dedicated daily / period extremes beyond chart-series high/low.
+11. **TODO — SD backup:** parse GW3000 microSD CSV as offline history fallback.
 
 ---
 
