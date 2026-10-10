@@ -2,7 +2,7 @@
 Deploy the Pi kiosk (public/ + server/) to the Raspberry Pi.
 
 Does not touch site/ or github.io.
-Reads SSH details from docs/pi-connect.local.md and env from .env (both gitignored).
+Reads SSH details from a local connect file and env from .env (both gitignored).
 """
 import re
 import sys

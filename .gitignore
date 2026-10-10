@@ -19,7 +19,7 @@ Thumbs.db
 secrets/
 credentials*
 **/passwords*
-docs/pi-connect.local.md
+docs/
 **/*.local.md
 site/**/.env*
 site/**/*secret*

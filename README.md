@@ -43,13 +43,5 @@ server/     Pi API
 public/     Pi kiosk UI
 site/       Public Pages UI source
 scripts/    Setup and deploy helpers
-docs/       Hardware and architecture notes
 systemd/    pi-weather.service
 ```
-
-## Hardware
-
-Kit: Ecowitt GW3002 (GW3000 hub + WS69 outdoor array).  
-Field reference: [`docs/ecowitt-gw3002-ws69-data.md`](docs/ecowitt-gw3002-ws69-data.md).
-
-Architecture overview: [`docs/architecture.md`](docs/architecture.md).
