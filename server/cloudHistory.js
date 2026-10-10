@@ -174,10 +174,8 @@ function normalizeCloudHistory(data, normalized) {
   };
 }
 
-async function fetchCloudHistoryUncached(normalized) {
+async function requestHistoryBody(start, end, cycleType) {
   const { applicationKey, apiKey, mac } = cloudCredentials();
-  const { start, end, cycleType } = rangeWindow(normalized);
-
   const params = new URLSearchParams({
     application_key: applicationKey,
     api_key: apiKey,
@@ -194,35 +192,49 @@ async function fetchCloudHistoryUncached(normalized) {
   });
 
   const url = `https://api.ecowitt.net/api/v3/device/history?${params}`;
-  let res;
-  try {
-    res = await fetch(url, { signal: AbortSignal.timeout(25000) });
-  } catch (err) {
-    const offline = emptyPayload(normalized, {
-      offline: true,
-      error: "No Internet - Check the system",
-    });
-    offline.cause = err.message;
-    return offline;
-  }
-
+  const res = await fetch(url, { signal: AbortSignal.timeout(25000) });
   if (!res.ok) {
-    return emptyPayload(normalized, {
-      offline: true,
-      error: "No Internet - Check the system",
-    });
+    const err = new Error(`Cloud history HTTP ${res.status}`);
+    err.offline = true;
+    throw err;
   }
-
   const body = await res.json();
   if (body.code !== 0) {
+    const err = new Error(body.msg || `Ecowitt code ${body.code}`);
+    err.offline = true;
+    throw err;
+  }
+  return body.data || {};
+}
+
+async function fetchCloudHistoryUncached(normalized) {
+  const { start, end, cycleType } = rangeWindow(normalized);
+
+  try {
+    let data = await requestHistoryBody(start, end, cycleType);
+    let payload = normalizeCloudHistory(data, normalized);
+
+    // Ecowitt often returns a single aggregate when a long 5‑min window is mostly
+    // empty (new station). Retry last 24h at 5‑min so temp/humidity charts work.
+    if (payload.points.length < 5) {
+      const endRecent = new Date();
+      const startRecent = new Date(endRecent.getTime() - 24 * 3600 * 1000);
+      data = await requestHistoryBody(startRecent, endRecent, "5min");
+      payload = normalizeCloudHistory(data, normalized);
+      if (payload.points.length) {
+        payload.note =
+          "Showing available cloud history (archive still filling — full week/month later).";
+      }
+    }
+
+    return payload;
+  } catch (err) {
     return emptyPayload(normalized, {
       offline: true,
       error: "No Internet - Check the system",
-      note: body.msg || `Ecowitt code ${body.code}`,
+      cause: err.message,
     });
   }
-
-  return normalizeCloudHistory(body.data || {}, normalized);
 }
 
 async function fetchCloudHistory(range) {
