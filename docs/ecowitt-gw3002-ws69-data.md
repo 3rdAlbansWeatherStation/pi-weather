@@ -5,7 +5,7 @@ Reference for the **3rd Albans** weather station kit and both UIs:
 | Surface | Role |
 |---------|------|
 | **Pi kiosk** (`pi-weather` on the LAN) | Always-on hut display — current conditions first, short history |
-| **Public GitHub site** (`site/`) | Shareable Pages UI — mock JSON for now; Ecowitt cloud later (keys in Actions secrets only) |
+| **Public GitHub site** (`site/`) | Shareable Pages UI; cloud JSON via scheduled fetch |
 
 **Hardware note:** “GW3002” is Ecowitt’s **bundle**: **GW3000** Ethernet/Wi‑Fi gateway (with SD slot) + **WS69** 7‑in‑1 outdoor array. Your guess is correct: the **gateway** provides **indoor temp/humidity** (external probe) and **barometric pressure** (internal).
 
@@ -168,7 +168,7 @@ The live hub endpoint is **current + rain totals**, not a full multi-week series
 - Auth: `application_key`, `api_key`, device `mac` (from Ecowitt app / User Center)
 - History `call_back` must list channels explicitly (e.g. `outdoor,indoor,pressure,wind,solar_and_uvi,rainfall`) — `all` is rejected on history
 
-**Do not commit API keys.** Store only in Pi `.env` (gitignored).
+Cloud credentials belong in local env / CI configuration, not in source files.
 
 ---
 

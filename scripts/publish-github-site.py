@@ -1,6 +1,6 @@
 """
 Publish site/ to 3rdAlbansWeatherStation.github.io (Pages root).
-Does not touch the Pi. Never copies secrets from .env.
+Does not touch the Pi.
 """
 import shutil
 import subprocess
