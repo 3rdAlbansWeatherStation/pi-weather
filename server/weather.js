@@ -161,13 +161,14 @@ function normalizeHub(raw) {
   };
 
   const rainOut = {
-    rateMm: toMm(valOf(rain, "0x0E")),
-    eventMm: toMm(valOf(rain, "0x0D")),
-    hourMm: toMm(valOf(rain, "0x0F")),
-    dailyMm: toMm(valOf(rain, "0x10")),
-    weekMm: toMm(valOf(rain, "0x11")),
-    monthMm: toMm(valOf(rain, "0x12")),
-    yearMm: toMm(valOf(rain, "0x13")),
+    rateMm: toMm(valOf(rain, "0x0E")) ?? 0,
+    eventMm: toMm(valOf(rain, "0x0D")) ?? 0,
+    // Hub often omits hour rain (0x0F) when dry — treat missing as 0
+    hourMm: toMm(valOf(rain, "0x0F")) ?? 0,
+    dailyMm: toMm(valOf(rain, "0x10")) ?? 0,
+    weekMm: toMm(valOf(rain, "0x11")) ?? 0,
+    monthMm: toMm(valOf(rain, "0x12")) ?? 0,
+    yearMm: toMm(valOf(rain, "0x13")) ?? 0,
     totalMm: toMm(valOf(rain, "0x14")),
   };
 
