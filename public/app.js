@@ -415,6 +415,13 @@ function renderHistory(data) {
   const offline = Boolean(data?.offline);
   setHistoryOffline(offline);
 
+  const noteEl = $("history-note");
+  if (noteEl) {
+    const note = typeof data?.note === "string" ? data.note.trim() : "";
+    noteEl.textContent = note;
+    noteEl.hidden = !note || offline;
+  }
+
   const s = data.summary || {};
   const points = Array.isArray(data.points) ? data.points : [];
   const hasPoints = points.length > 0;

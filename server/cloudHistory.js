@@ -215,6 +215,21 @@ async function requestHistoryBody(start, end, cycleType) {
   return body.data || {};
 }
 
+function pointsSpanMs(points) {
+  if (!points || points.length < 2) return 0;
+  const t0 = new Date(points[0].t).getTime();
+  const t1 = new Date(points[points.length - 1].t).getTime();
+  if (!Number.isFinite(t0) || !Number.isFinite(t1)) return 0;
+  return Math.max(0, t1 - t0);
+}
+
+async function fetchDenseRecent(normalized) {
+  const endRecent = new Date();
+  const startRecent = new Date(endRecent.getTime() - 48 * 3600 * 1000);
+  const data = await requestHistoryBody(startRecent, endRecent, "5min");
+  return normalizeCloudHistory(data, normalized);
+}
+
 async function fetchCloudHistoryUncached(normalized) {
   const { start, end, cycleType } = rangeWindow(normalized);
 
@@ -222,16 +237,24 @@ async function fetchCloudHistoryUncached(normalized) {
     let data = await requestHistoryBody(start, end, cycleType);
     let payload = normalizeCloudHistory(data, normalized);
 
-    // Ecowitt often returns a single aggregate when a long 5‑min window is mostly
-    // empty (new station). Retry last 24h at 5‑min so temp/humidity charts work.
-    if (payload.points.length < 5) {
-      const endRecent = new Date();
-      const startRecent = new Date(endRecent.getTime() - 24 * 3600 * 1000);
-      data = await requestHistoryBody(startRecent, endRecent, "5min");
-      payload = normalizeCloudHistory(data, normalized);
+    // New / short archives: Ecowitt often collapses long 5‑min windows, while
+    // month (30‑min) still returns today's samples — Week/Month then disagree.
+    // Prefer the densest recent 5‑min window whenever the archive is still short.
+    const spanMs = pointsSpanMs(payload.points);
+    const archiveShort =
+      payload.points.length < 12 || spanMs < 2 * 864e5;
+
+    if (archiveShort) {
+      const dense = await fetchDenseRecent(normalized);
+      if (
+        dense.points.length > payload.points.length ||
+        payload.points.length < 5
+      ) {
+        payload = dense;
+      }
       if (payload.points.length) {
         payload.note =
-          "Showing available cloud history (archive still filling — full week/month later).";
+          "Showing available history while the station archive fills (same recent data for Week / Month / Year until enough days exist).";
       }
     }
 
